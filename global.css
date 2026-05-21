@@ -1,0 +1,12 @@
+﻿/*
+  Global stylesheet intentionally minimal.
+  Design tokens and theme palette are centralized in `base.css`.
+*/
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+}

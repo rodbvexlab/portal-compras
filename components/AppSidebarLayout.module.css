@@ -1,0 +1,366 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--background) 94%, black 6%) 0%,
+      var(--background) 100%
+    );
+}
+
+.sidebar {
+  width: 260px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--sidebar) 94%, black 6%) 0%,
+      color-mix(in srgb, var(--sidebar) 88%, black 12%) 100%
+    );
+  border-right: 1px solid color-mix(in srgb, var(--border) 84%, black 16%);
+  box-shadow: inset -1px 0 0 color-mix(in srgb, var(--border) 40%, transparent);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition:
+    width var(--animation-duration-normal) ease,
+    transform var(--animation-duration-normal) ease;
+}
+
+.sidebar.collapsed {
+  width: 88px;
+}
+
+.sidebarHeader {
+  height: 74px;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: 0 var(--spacing-6);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 74%, black 26%);
+  background-color: color-mix(in srgb, var(--sidebar) 86%, var(--surface) 14%);
+}
+
+.logo {
+  width: 24px;
+  height: 24px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--primary) 88%, white 12%) 0%,
+      color-mix(in srgb, var(--primary) 82%, black 18%) 100%
+    );
+  border-radius: var(--radius-sm);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--primary) 52%, black 48%),
+    0 4px 10px -8px color-mix(in srgb, var(--primary) 38%, transparent);
+}
+
+.sidebarHeader h2 {
+  font-family: var(--font-family-heading);
+  font-size: 1.06rem;
+  font-weight: 700;
+  color: var(--sidebar-foreground);
+  letter-spacing: 0.01em;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.sidebarTitle {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.collapseButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%);
+  border-radius: var(--radius-sm);
+  background-color: color-mix(in srgb, var(--surface) 92%, black 8%);
+  color: var(--sidebar-foreground);
+  cursor: pointer;
+  transition: all var(--animation-duration-fast) ease;
+}
+
+.collapseButton:hover {
+  border-color: color-mix(in srgb, var(--primary) 34%, var(--border) 66%);
+  color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 8%, var(--surface) 92%);
+}
+
+.collapseButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 28%, transparent);
+}
+
+.nav {
+  flex: 1;
+  padding: var(--spacing-4) 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  overflow-y: auto;
+}
+
+.navItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: 0.7rem var(--spacing-4);
+  color: color-mix(in srgb, var(--sidebar-foreground) 90%, var(--muted-foreground) 10%);
+  text-decoration: none;
+  font-weight: 500;
+  transition:
+    background-color var(--animation-duration-fast),
+    border-color var(--animation-duration-fast),
+    color var(--animation-duration-fast);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  margin: 0 var(--spacing-3);
+  min-height: 44px;
+}
+
+.navItem::before {
+  content: "";
+  position: absolute;
+  left: 0.35rem;
+  top: 22%;
+  bottom: 22%;
+  width: 2px;
+  border-radius: var(--radius-full);
+  background: transparent;
+}
+
+.navItem:hover {
+  background-color: color-mix(in srgb, var(--muted) 78%, transparent);
+  border-color: color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+.navItem.active {
+  background-color: color-mix(in srgb, var(--primary) 12%, var(--surface) 88%);
+  border-color: color-mix(in srgb, var(--primary) 34%, var(--border) 66%);
+  color: color-mix(in srgb, var(--primary) 76%, white 24%);
+}
+
+.navItem.active::before {
+  background: color-mix(in srgb, var(--primary) 76%, white 24%);
+}
+
+.navLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebarFooter {
+  padding: var(--spacing-4);
+  border-top: 1px solid color-mix(in srgb, var(--border) 74%, black 26%);
+  background-color: color-mix(in srgb, var(--sidebar) 88%, black 12%);
+}
+
+.userProfile {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    background-color var(--animation-duration-fast),
+    border-color var(--animation-duration-fast);
+}
+
+.userProfile:hover {
+  background-color: color-mix(in srgb, var(--muted) 72%, transparent);
+  border-color: color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.userName {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--sidebar-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userRole {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--background) 90%, black 10%) 0%,
+      color-mix(in srgb, var(--background) 96%, black 4%) 100%
+    );
+}
+
+.mobileHeader {
+  display: none;
+  height: 64px;
+  align-items: center;
+  padding: 0 var(--spacing-4);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--surface) 94%, black 6%) 0%,
+      color-mix(in srgb, var(--surface) 88%, black 12%) 100%
+    );
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 78%, black 22%);
+  gap: var(--spacing-4);
+}
+
+.mobileHeader h2 {
+  font-family: var(--font-family-heading);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.desktopChrome {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 clamp(var(--spacing-5), 2vw, var(--spacing-8));
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 74%, black 26%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--surface) 86%, var(--background) 14%) 0%,
+      color-mix(in srgb, var(--surface) 74%, var(--background) 26%) 100%
+    );
+}
+
+.desktopChromeLine {
+  width: min(100%, 1560px);
+  margin: 0 auto;
+  height: 1px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--primary) 22%, var(--border) 78%) 14%,
+      color-mix(in srgb, var(--border) 90%, transparent) 86%,
+      transparent 100%
+    );
+}
+
+.content {
+  flex: 1;
+  padding: clamp(var(--spacing-5), 2vw, var(--spacing-8));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.content > * {
+  width: min(100%, 1560px);
+  margin: 0 auto;
+}
+
+.sidebar.collapsed .sidebarTitle,
+.sidebar.collapsed .navLabel,
+.sidebar.collapsed .userInfo {
+  display: none;
+}
+
+.sidebar.collapsed .sidebarHeader {
+  justify-content: center;
+  padding: 0 var(--spacing-3);
+}
+
+.sidebar.collapsed .navItem {
+  justify-content: center;
+  margin: 0 var(--spacing-2);
+  padding: var(--spacing-3);
+}
+
+.sidebar.collapsed .userProfile {
+  justify-content: center;
+}
+
+.sidebar.collapsed .sidebarFooter {
+  padding: var(--spacing-3);
+}
+
+/* mobile handling */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: var(--z-overlay);
+    transform: translateX(-100%);
+    width: 260px;
+  }
+  .sidebar.collapsed {
+    width: 260px;
+  }
+  .sidebarHeader {
+    justify-content: flex-start;
+  }
+  .sidebar.collapsed .sidebarTitle,
+  .sidebar.collapsed .navLabel {
+    display: block;
+  }
+  .sidebar.collapsed .userInfo {
+    display: flex;
+  }
+  .sidebar.collapsed .navItem {
+    justify-content: flex-start;
+    margin: 0 var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-4);
+  }
+  .sidebar.collapsed .userProfile {
+    justify-content: flex-start;
+  }
+  .collapseButton {
+    display: none;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: var(--shadow-lg);
+  }
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgb(0 0 0 / 0.62);
+    z-index: calc(var(--z-overlay) - 1);
+  }
+  .mobileHeader {
+    display: flex;
+  }
+  .desktopChrome {
+    display: none;
+  }
+  .content {
+    padding: var(--spacing-4);
+  }
+}

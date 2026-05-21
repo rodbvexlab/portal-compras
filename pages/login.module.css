@@ -1,0 +1,171 @@
+.container {
+  min-height: 100vh;
+  background-color: color-mix(in srgb, var(--background) 84%, black 16%);
+}
+
+.viewport {
+  min-height: 100dvh;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  padding: clamp(var(--spacing-4), 4vw, var(--spacing-10));
+}
+
+.stack {
+  width: min(100%, 28rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(var(--spacing-4), 2.6vw, var(--spacing-7));
+  transform: translateY(clamp(-20px, -2.2vh, -10px));
+}
+
+.logo {
+  width: min(100%, 14rem);
+  height: auto;
+  object-fit: contain;
+}
+
+.authSurface {
+  width: 100%;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-5);
+  padding: clamp(var(--spacing-5), 2.5vw, var(--spacing-8));
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--surface) 94%, black 6%) 0%,
+      color-mix(in srgb, var(--surface) 100%, transparent) 100%
+    );
+  box-shadow: 0 22px 42px -30px rgb(0 0 0 / 0.72);
+}
+
+.authSurface > * {
+  position: relative;
+  z-index: 1;
+}
+
+.energyBorder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.energyTrack {
+  fill: none;
+  stroke: color-mix(in srgb, #35d4ff 74%, var(--border) 26%);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.7;
+  filter:
+    drop-shadow(0 0 2px rgb(53 212 255 / 0.2))
+    drop-shadow(0 0 6px rgb(53 212 255 / 0.12));
+  vector-effect: non-scaling-stroke;
+  animation: energyTrackPulse 4.8s ease-in-out infinite;
+}
+
+.energyLine {
+  fill: none;
+  stroke: #b8f5ff;
+  stroke-width: 1.95;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.84;
+  filter:
+    drop-shadow(0 0 4px rgb(184 245 255 / 0.34))
+    drop-shadow(0 0 10px rgb(103 222 255 / 0.22))
+    drop-shadow(0 0 16px rgb(103 222 255 / 0.14));
+  animation: energyBorderPulse 4.8s ease-in-out infinite;
+}
+
+.title {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-family-heading);
+  font-size: clamp(1.75rem, 3.8vw, 2.25rem);
+  line-height: 1.04;
+  color: var(--foreground);
+  letter-spacing: 0.01em;
+}
+
+.form {
+  margin: 0;
+}
+
+@keyframes energyBorderPulse {
+  0%,
+  100% {
+    opacity: 0.72;
+    filter:
+      drop-shadow(0 0 3px rgb(184 245 255 / 0.24))
+      drop-shadow(0 0 8px rgb(103 222 255 / 0.16))
+      drop-shadow(0 0 12px rgb(103 222 255 / 0.1));
+  }
+  50% {
+    opacity: 0.96;
+    filter:
+      drop-shadow(0 0 6px rgb(184 245 255 / 0.44))
+      drop-shadow(0 0 14px rgb(103 222 255 / 0.28))
+      drop-shadow(0 0 22px rgb(103 222 255 / 0.18));
+  }
+}
+
+@keyframes energyTrackPulse {
+  0%,
+  100% {
+    opacity: 0.62;
+    filter:
+      drop-shadow(0 0 2px rgb(53 212 255 / 0.16))
+      drop-shadow(0 0 5px rgb(53 212 255 / 0.09));
+  }
+  50% {
+    opacity: 0.84;
+    filter:
+      drop-shadow(0 0 4px rgb(53 212 255 / 0.28))
+      drop-shadow(0 0 9px rgb(53 212 255 / 0.17));
+  }
+}
+
+@media (max-width: 640px) {
+  .viewport {
+    padding: var(--spacing-4);
+  }
+
+  .stack {
+    gap: var(--spacing-4);
+    transform: translateY(clamp(-14px, -2vh, -8px));
+  }
+
+  .logo {
+    width: min(100%, 11rem);
+  }
+
+  .authSurface {
+    width: 100%;
+    padding: var(--spacing-6);
+  }
+}
+
+@media (max-height: 740px) {
+  .stack {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .energyTrack,
+  .energyLine {
+    animation: none;
+  }
+}

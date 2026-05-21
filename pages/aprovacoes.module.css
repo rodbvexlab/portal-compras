@@ -1,0 +1,831 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.deskHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding-bottom: var(--spacing-3);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
+}
+
+.deskTitle {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: clamp(1.35rem, 1.45vw, 1.65rem);
+  font-weight: 680;
+  letter-spacing: 0.01em;
+  color: var(--foreground);
+}
+
+.deskSubtitle {
+  margin: 0;
+  color: color-mix(in srgb, var(--muted-foreground) 90%, white 10%);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  max-width: 74ch;
+}
+
+.operationalStrip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 1px solid color-mix(in srgb, var(--border) 86%, var(--primary) 14%);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface) 95%, black 5%) 0%,
+    color-mix(in srgb, var(--surface) 89%, black 11%) 100%
+  );
+}
+
+.stripItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.36rem;
+  min-width: 0;
+}
+
+.stripLabel {
+  color: color-mix(in srgb, var(--muted-foreground) 90%, white 10%);
+  font-size: 0.69rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.stripValue {
+  font-family: var(--font-family-heading);
+  font-size: 1.45rem;
+  line-height: 1;
+  color: var(--foreground);
+}
+
+.spinning {
+  animation: strip-spin 1.15s linear infinite;
+}
+
+@keyframes strip-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.queueWorkspace {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  border: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-4);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface) 96%, black 4%) 0%,
+    color-mix(in srgb, var(--surface) 90%, black 10%) 100%
+  );
+}
+
+.queueHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  padding-bottom: var(--spacing-2);
+}
+
+.queueTitle {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: 1.02rem;
+  font-weight: 620;
+  color: var(--foreground);
+  letter-spacing: 0.02em;
+}
+
+.queueHeaderMeta {
+  color: color-mix(in srgb, var(--muted-foreground) 90%, white 10%);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.queueEmpty {
+  border: 1px dashed color-mix(in srgb, var(--border) 86%, var(--primary) 14%);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface) 95%, black 5%);
+  padding: var(--spacing-6) var(--spacing-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  text-align: center;
+}
+
+.queueEmptyTitle {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 0.92rem;
+  font-weight: 620;
+}
+
+.queueEmptyText {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(18rem, 0.95fr);
+  gap: var(--spacing-5);
+  align-items: stretch;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  padding: var(--spacing-6);
+  border: 1px solid color-mix(in srgb, var(--border) 74%, var(--primary) 26%);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--surface) 94%, black 6%) 0%,
+      color-mix(in srgb, var(--surface) 98%, var(--muted) 2%) 100%
+    );
+  box-shadow: var(--shadow-md);
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 1.75rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border) 70%);
+  color: color-mix(in srgb, var(--primary) 72%, white 28%);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.title {
+  font-family: var(--font-family-heading);
+  font-size: clamp(1.8rem, 2vw, 2.4rem);
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+  line-height: 1.05;
+}
+
+.subtitle {
+  max-width: 58ch;
+  color: var(--muted-foreground);
+  font-size: 0.98rem;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.queueSummary {
+  display: flex;
+  gap: var(--spacing-4);
+  justify-content: space-between;
+  padding: var(--spacing-5);
+  border: 1px solid color-mix(in srgb, var(--border) 78%, var(--primary) 22%);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--surface) 90%, black 10%) 0%,
+      color-mix(in srgb, var(--surface) 96%, var(--primary) 4%) 100%
+    );
+  box-shadow: var(--shadow-md);
+}
+
+.metricBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.metricLabel,
+.metaLabel,
+.cardEyebrow,
+.infoLabel,
+.sectionLabel,
+.valueLabel {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.metricLabel,
+.metaLabel,
+.cardEyebrow,
+.infoLabel,
+.sectionLabel {
+  color: var(--muted-foreground);
+}
+
+.metricValue {
+  font-family: var(--font-family-heading);
+  font-size: clamp(2.4rem, 4vw, 3.2rem);
+  line-height: 0.95;
+  color: var(--foreground);
+}
+
+.metricHint {
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  max-width: 26ch;
+}
+
+.metricDivider {
+  width: 1px;
+  align-self: stretch;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--border) 55%, var(--primary) 45%) 20%,
+    color-mix(in srgb, var(--border) 55%, var(--primary) 45%) 80%,
+    transparent 100%
+  );
+}
+
+.queueMeta {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  min-width: 11rem;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.refreshBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  width: fit-content;
+  min-height: 1.75rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--muted) 58%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 88%, white 12%);
+  color: var(--foreground);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 42rem), 1fr));
+  gap: var(--spacing-4);
+}
+
+.comprasTiCardsGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.approvalCard {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, var(--primary) 28%);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface) 94%, black 6%);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgb(255 255 255 / 0.035);
+  overflow: hidden;
+  transition:
+    border-color var(--animation-duration-fast) ease,
+    transform var(--animation-duration-fast) ease,
+    box-shadow var(--animation-duration-fast) ease;
+}
+
+.approvalCard:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--border) 40%, var(--primary) 60%);
+  box-shadow: var(--shadow-lg);
+}
+
+.cardHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-5) var(--spacing-6);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 86%, white 14%);
+  background: color-mix(in srgb, var(--muted) 18%, var(--surface) 82%);
+}
+
+.cardTopline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+}
+
+.identityBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.18rem;
+  min-width: 0;
+}
+
+.cardSignalStack {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  max-width: 58%;
+}
+
+.cardTimestamp {
+  color: var(--muted-foreground);
+  font-size: 0.82rem;
+  line-height: 1.3;
+}
+
+.cardHeadingRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.cardTitle {
+  font-family: var(--font-family-heading);
+  font-size: 1.28rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-5);
+  padding: var(--spacing-5) var(--spacing-6);
+  flex: 1;
+}
+
+.primaryStrip {
+  display: grid;
+  grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
+  gap: var(--spacing-4);
+  align-items: stretch;
+}
+
+.valueHighlight {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--spacing-3);
+  min-height: 9.5rem;
+  padding: var(--spacing-5);
+  border: 1px solid color-mix(in srgb, var(--primary) 42%, var(--border) 58%);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--primary) 12%, var(--surface) 88%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.05),
+    inset 0 -1px 0 rgb(0 0 0 / 0.22);
+}
+
+.valueLabel {
+  color: color-mix(in srgb, var(--primary) 78%, white 22%);
+}
+
+.valueAmount {
+  font-family: var(--font-family-heading);
+  font-size: 2rem;
+  font-weight: 760;
+  line-height: 1.1;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(10.5rem, 1fr));
+  gap: var(--spacing-3);
+  height: 100%;
+}
+
+.infoRow {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.28rem;
+  min-width: 0;
+  min-height: 4.25rem;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--muted) 13%, transparent);
+  padding: 0.72rem 0.82rem;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.025);
+}
+
+.metaGridWide {
+  grid-column: auto;
+}
+
+.infoValue {
+  font-size: 0.95rem;
+  font-weight: 570;
+  color: var(--foreground);
+  line-height: 1.35;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
+}
+
+.justificationBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4) var(--spacing-5);
+  border: 1px solid color-mix(in srgb, var(--border) 76%, var(--primary) 24%);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--muted) 18%, var(--surface) 82%);
+}
+
+.dialogSummary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  border: 1px solid color-mix(in srgb, var(--border) 88%, white 12%);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--muted) 28%, transparent);
+}
+
+.justificationText {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
+  min-height: 1.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.justificationTextEmpty {
+  color: color-mix(in srgb, var(--muted-foreground) 86%, white 14%);
+  font-style: italic;
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
+  padding: var(--spacing-4) var(--spacing-6) var(--spacing-5);
+  border-top: 1px solid color-mix(in srgb, var(--border) 86%, white 14%);
+  background: color-mix(in srgb, var(--surface) 90%, black 10%);
+}
+
+.compactApprovalCard {
+  min-height: 0;
+}
+
+.compactCardHeader {
+  gap: var(--spacing-3);
+}
+
+.compactHeaderBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  align-items: center;
+}
+
+.compactCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-5);
+  flex: 1;
+}
+
+.compactMetaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-3) var(--spacing-4);
+}
+
+.compactInfoRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.compactValue {
+  font-family: var(--font-family-heading);
+  font-size: 1.02rem;
+  font-weight: 650;
+  color: var(--foreground);
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.compactCardFooter {
+  padding-top: var(--spacing-3);
+}
+
+.compraObservacao {
+  border: 1px solid color-mix(in srgb, var(--border) 88%, white 12%);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--muted) 28%, transparent);
+  padding: var(--spacing-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.compraObservacaoLabel {
+  margin: 0;
+  color: color-mix(in srgb, var(--muted-foreground) 88%, white 12%);
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.compraObservacaoText {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.compraGridTwo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-3);
+}
+
+.compraField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.spanTwo {
+  grid-column: 1 / -1;
+}
+
+.groupPagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--spacing-3);
+}
+
+.detailButton {
+  min-height: 2.5rem;
+  min-width: 8rem;
+}
+
+.actionButtons {
+  display: grid;
+  grid-template-columns: minmax(9rem, 0.8fr) minmax(11rem, 1fr);
+  gap: var(--spacing-2);
+  width: min(100%, 24rem);
+}
+
+.primaryActionButton {
+  font-weight: 650;
+  min-height: 2.75rem;
+}
+
+.secondaryActionButton {
+  font-weight: 600;
+  min-height: 2.75rem;
+  background-color: color-mix(in srgb, var(--error) 72%, black 28%);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-16) var(--spacing-5);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--surface) 94%, black 6%) 0%,
+      color-mix(in srgb, var(--surface) 100%, transparent) 100%
+    );
+  border: 1px dashed color-mix(in srgb, var(--border) 78%, var(--primary) 22%);
+  border-radius: var(--radius-lg);
+  color: var(--muted-foreground);
+  text-align: center;
+}
+
+.emptyIcon {
+  opacity: 0.6;
+}
+
+.skeletonCard {
+  height: 26rem;
+  width: 100%;
+  border-radius: var(--radius-lg);
+}
+
+.dialogContent {
+  max-width: 42rem;
+}
+
+.dialogBody {
+  margin: var(--spacing-4) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.dialogSummaryHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+}
+
+.dialogSummaryTitle {
+  margin: var(--spacing-1) 0 0;
+  font-family: var(--font-family-heading);
+  font-size: 1.05rem;
+  color: var(--foreground);
+  line-height: 1.35;
+}
+
+.dialogSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-3) var(--spacing-4);
+}
+
+.fieldBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.textareaLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.paymentSelectTrigger {
+  min-height: 2.75rem;
+  border-radius: var(--radius-md);
+  border-color: color-mix(in srgb, var(--primary) 32%, var(--border) 68%);
+  background: color-mix(in srgb, var(--surface) 90%, black 10%);
+  color: var(--foreground);
+}
+
+.paymentSelectTrigger:hover {
+  border-color: color-mix(in srgb, var(--primary) 48%, var(--border) 52%);
+  background: color-mix(in srgb, var(--surface) 86%, var(--primary) 14%);
+}
+
+.paymentSelectTrigger:focus {
+  border-color: color-mix(in srgb, var(--primary) 74%, white 26%);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
+.paymentSelectContent {
+  border-color: color-mix(in srgb, var(--primary) 32%, var(--border) 68%);
+  background: color-mix(in srgb, var(--popup) 90%, black 10%);
+  color: var(--popup-foreground);
+}
+
+@media (max-width: 1080px) {
+  .operationalStrip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .queueHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .queueSummary {
+    flex-direction: column;
+  }
+
+  .metricDivider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--border) 55%, var(--primary) 45%) 20%,
+      color-mix(in srgb, var(--border) 55%, var(--primary) 45%) 80%,
+      transparent 100%
+    );
+  }
+
+  .queueMeta {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 820px) {
+  .operationalStrip {
+    grid-template-columns: 1fr;
+  }
+
+  .cardsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .comprasTiCardsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .primaryStrip {
+    grid-template-columns: 1fr;
+  }
+
+  .compactMetaGrid,
+  .compraGridTwo {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .deskHeader {
+    gap: var(--spacing-2);
+  }
+
+  .queueWorkspace {
+    padding: var(--spacing-3);
+  }
+
+  .header,
+  .queueSummary,
+  .cardHeader,
+  .cardBody,
+  .cardFooter {
+    padding-left: var(--spacing-4);
+    padding-right: var(--spacing-4);
+  }
+
+  .cardTopline,
+  .cardHeadingRow,
+  .dialogSummaryHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .metaGrid,
+  .dialogSummaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .actionButtons {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  .actionButtons > * {
+    width: 100%;
+  }
+}

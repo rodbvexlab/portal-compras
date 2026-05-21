@@ -1,0 +1,211 @@
+
+@import url(https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap);
+@import url(https://fonts.googleapis.com/css2?family=Outfit:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap);
+@import url(https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap);
+:root {
+  /* Overlay layers */
+  --z-overlay: 400;
+
+  --z-spotlight: 1000; /* Tutorial spotlights/guided help */
+
+  /* System layers */
+  --z-critical: 2000; /* Critical system notifications */
+
+  /* spacing */
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-7: 1.75rem;
+  --spacing-8: 2rem;
+  --spacing-9: 2.25rem;
+  --spacing-10: 2.5rem;
+  --spacing-11: 2.75rem;
+  --spacing-12: 3rem;
+  --spacing-13: 3.25rem;
+  --spacing-14: 3.5rem;
+  --spacing-15: 3.75rem;
+  --spacing-16: 4rem;
+  --spacing-17: 4.25rem;
+  --spacing-18: 4.5rem;
+  --spacing-19: 4.75rem;
+  --spacing-20: 5rem;
+  /* Note: spacing vars only up to 20 */
+}
+
+:root {
+  --background: #171b20;
+  --foreground: #ece9e2;
+
+  --surface: #21262d;
+  --surface-foreground: #ece9e2;
+
+  --sidebar: #1b2027;
+  --sidebar-foreground: #e4e0d8;
+
+  --card: #262c34;
+  --card-foreground: #ece9e2;
+
+  --popup: #2b323b;
+  --popup-foreground: #ece9e2;
+
+  --primary: #c8a256;
+  --primary-foreground: #1c1a16;
+
+  --secondary: #848b96;
+  --secondary-foreground: #171a1f;
+
+  --accent: #b58d44;
+  --accent-foreground: #1c1a16;
+
+  --muted: #303741;
+  --muted-foreground: #b4b3ab;
+
+  --success: #3f9771;
+  --success-foreground: #f4f7f2;
+
+  --error: #cb615b;
+  --error-foreground: #fff5f4;
+
+  --warning: #bb8a3a;
+  --warning-foreground: #1c1a16;
+
+  --info: #6b849d;
+  --info-foreground: #f7f9fc;
+  --info-hover: #5f7690;
+  --info-active: #526981;
+
+  --border: #3f4752;
+  --ring: #cbab63;
+
+  /* Font Families */
+  --font-family-base: 'Plus Jakarta Sans', sans-serif;
+  --font-family-heading: 'Outfit', sans-serif;
+  --font-family-monospace: 'JetBrains Mono', monospace;
+  --font-family-cursive: cursive;
+
+  /* Border Radius and box shadows */
+  --shadow: 0 1px 2px 0 rgb(0 0 0 / 0.42), 0 1px 1px -1px rgb(0 0 0 / 0.36);
+  --shadow-md: 0 10px 20px -10px rgb(0 0 0 / 0.54), 0 3px 8px -4px rgb(0 0 0 / 0.46);
+  --shadow-lg: 0 24px 44px -24px rgb(0 0 0 / 0.65), 0 10px 24px -12px rgb(0 0 0 / 0.52);
+  --shadow-focus: 0 0 0 2px #171b20, 0 0 0 4px var(--ring);
+
+  --radius-sm: 0.25rem;
+  --radius: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px; 
+
+  /* Animation */
+  --animation-duration-fast: 150ms;
+  --animation-duration-normal: 250ms;
+  --animation-duration-slow: 350ms;
+
+  /* Chart colors */
+  --chart-color-1: #c8a256;
+  --chart-color-2: #aeb6c1;
+  --chart-color-3: #778390;
+  --chart-color-4: #8f7b58;
+  --chart-color-5: #766863;
+}
+
+.dark {
+  --background: #14181d;
+  --foreground: #f3f0e8;
+
+  --surface: #1d232a;
+  --surface-foreground: #f3f0e8;
+
+  --sidebar: #171c23;
+  --sidebar-foreground: #e6e2da;
+
+  --card: #232a33;
+  --card-foreground: #f3f0e8;
+
+  --popup: #292f38;
+  --popup-foreground: #f3f0e8;
+
+  --primary: #d0ad62;
+  --primary-foreground: #171510;
+
+  --secondary: #8d949f;
+  --secondary-foreground: #14161b;
+
+  --accent: #c0984f;
+  --accent-foreground: #171510;
+
+  --muted: #2b323b;
+  --muted-foreground: #bbb9af;
+
+  --success: #45a07a;
+  --success-foreground: #f4f8f3;
+
+  --error: #d06963;
+  --error-foreground: #fff4f3;
+
+  --warning: #c29141;
+  --warning-foreground: #19170f;
+
+  --info: #6f889f;
+  --info-foreground: #f8fbff;
+  --info-hover: #637b93;
+  --info-active: #556c83;
+
+  --border: #3a434d;
+  --ring: #d2b268;
+
+  --shadow: 0 1px 2px 0 rgb(0 0 0 / 0.5), 0 1px 1px -1px rgb(0 0 0 / 0.42);
+  --shadow-md: 0 12px 24px -12px rgb(0 0 0 / 0.6), 0 4px 10px -5px rgb(0 0 0 / 0.5);
+  --shadow-lg: 0 26px 48px -26px rgb(0 0 0 / 0.7), 0 12px 28px -14px rgb(0 0 0 / 0.56);
+  --shadow-focus: 0 0 0 2px #14181d, 0 0 0 4px var(--ring);
+
+  --chart-color-1: #d0ad62;
+  --chart-color-2: #bac0c9;
+  --chart-color-3: #7f8a96;
+  --chart-color-4: #9a8662;
+  --chart-color-5: #7f7069;
+}
+@layer base {
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-family-base);
+  }
+
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+
+  button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  th, td {
+    display: table-cell!important;
+  }
+}
+.rbc-month-view {
+  overflow: visible !important;
+}

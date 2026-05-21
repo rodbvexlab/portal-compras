@@ -1,0 +1,59 @@
+# dependencies
+node_modules/
+.pnpm-store/
+.npm/
+
+# build
+dist/
+build/
+.vite/
+
+# env / secrets
+.env
+.env.*
+env.json
+*.env
+*.key
+*.pem
+*.pfx
+*.crt
+
+# logs
+logs/
+*.log
+portal-compras-out.log
+portal-compras-err.log
+
+# backups / dumps
+*.backup
+*.bak
+*.dump
+*.sql.backup
+*.zip
+*.rar
+*.7z
+backup/
+backups/
+F:/backup-postgres/
+C:/backup-postgres/
+
+# release folders / QA artifacts
+Release*/
+release/
+qa-artifacts/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# temp
+tmp/
+temp/
+.cache/
+
+# local database files
+*.sqlite
+*.db

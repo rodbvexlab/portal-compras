@@ -1,0 +1,258 @@
+@layer base {
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 1.625rem;
+    border-radius: var(--radius-full);
+    padding: 0.2rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.25;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.03);
+    transition:
+      background-color var(--animation-duration-fast) ease,
+      border-color var(--animation-duration-fast) ease,
+      color var(--animation-duration-fast) ease,
+      transform var(--animation-duration-fast) ease;
+    cursor: default;
+    user-select: none;
+  }
+
+  .compact {
+    min-height: 1.2rem;
+    padding: 0.08rem 0.4rem;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+
+  .compact::before {
+    display: none;
+  }
+
+  .primary {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--primary) 88%, white 12%) 0%,
+      var(--primary) 100%
+    );
+    color: var(--primary-foreground);
+    border-color: color-mix(in srgb, var(--primary) 78%, black 22%);
+  }
+
+  .primary:hover {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--primary) 82%, white 18%) 0%,
+      color-mix(in srgb, var(--primary) 92%, black 8%) 100%
+    );
+    border-color: color-mix(in srgb, var(--primary) 70%, black 30%);
+  }
+
+  .destructive {
+    background-color: color-mix(in srgb, var(--error) 20%, var(--surface) 80%);
+    color: color-mix(in srgb, var(--error-foreground) 92%, white 8%);
+    border-color: color-mix(in srgb, var(--error) 56%, var(--border) 44%);
+  }
+
+  .destructive:hover {
+    background-color: color-mix(in srgb, var(--error) 28%, var(--surface) 72%);
+    border-color: color-mix(in srgb, var(--error) 64%, var(--border) 36%);
+  }
+
+  .secondary {
+    background-color: color-mix(in srgb, var(--surface) 84%, var(--secondary) 16%);
+    color: color-mix(in srgb, var(--secondary) 45%, var(--foreground) 55%);
+    border-color: color-mix(in srgb, var(--secondary) 42%, var(--border) 58%);
+  }
+
+  .secondary:hover {
+    background-color: color-mix(in srgb, var(--surface) 74%, var(--secondary) 26%);
+    border-color: color-mix(in srgb, var(--secondary) 52%, var(--border) 48%);
+  }
+
+  .outline {
+    background-color: color-mix(in srgb, var(--surface) 96%, transparent);
+    color: color-mix(in srgb, var(--foreground) 88%, var(--muted-foreground) 12%);
+    border-color: color-mix(in srgb, var(--border) 88%, white 12%);
+  }
+
+  .outline:hover {
+    background-color: color-mix(in srgb, var(--surface) 90%, var(--muted) 10%);
+    border-color: color-mix(in srgb, var(--border) 74%, var(--primary) 26%);
+  }
+
+  .success {
+    background-color: color-mix(in srgb, var(--success) 22%, var(--surface) 78%);
+    color: color-mix(in srgb, var(--success-foreground) 92%, white 8%);
+    border-color: color-mix(in srgb, var(--success) 54%, var(--border) 46%);
+  }
+
+  .success:hover {
+    background-color: color-mix(in srgb, var(--success) 30%, var(--surface) 70%);
+    border-color: color-mix(in srgb, var(--success) 62%, var(--border) 38%);
+  }
+
+  .warning {
+    background-color: color-mix(in srgb, var(--warning) 26%, var(--surface) 74%);
+    color: color-mix(in srgb, var(--warning-foreground) 94%, #201a10 6%);
+    border-color: color-mix(in srgb, var(--warning) 60%, var(--border) 40%);
+  }
+
+  .warning:hover {
+    background-color: color-mix(in srgb, var(--warning) 34%, var(--surface) 66%);
+    border-color: color-mix(in srgb, var(--warning) 68%, var(--border) 32%);
+  }
+
+  .statusPendingFinance,
+  .statusPendingBoard,
+  .statusApprovedPurchase,
+  .statusReturnedAdjust,
+  .statusRejected,
+  .statusInPurchase,
+  .statusPurchased,
+  .statusConcluded,
+  .statusCanceled {
+    background-color: var(--status-bg);
+    color: var(--status-fg);
+    border-color: var(--status-border);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.03),
+      inset 0 -1px 0 rgb(0 0 0 / 0.16);
+  }
+
+  .statusPendingFinance::before,
+  .statusPendingBoard::before,
+  .statusApprovedPurchase::before,
+  .statusReturnedAdjust::before,
+  .statusRejected::before,
+  .statusInPurchase::before,
+  .statusPurchased::before,
+  .statusConcluded::before,
+  .statusCanceled::before {
+    content: "";
+    width: 0.44rem;
+    height: 0.44rem;
+    border-radius: var(--radius-full);
+    background-color: var(--status-fg);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--status-fg) 36%, transparent);
+    margin-right: 0.38rem;
+    flex: 0 0 auto;
+  }
+
+  .statusPendingFinance {
+    --status-bg: #332400;
+    --status-fg: #ffb347;
+    --status-border: #8a5a00;
+  }
+
+  .statusPendingBoard {
+    --status-bg: #2a2010;
+    --status-fg: #ffd166;
+    --status-border: #6a5010;
+  }
+
+  .statusApprovedPurchase {
+    --status-bg: #0f2a42;
+    --status-fg: #5aadff;
+    --status-border: #1a4a7a;
+  }
+
+  .statusReturnedAdjust {
+    --status-bg: #2e1800;
+    --status-fg: #ff9a3c;
+    --status-border: #7a4010;
+  }
+
+  .statusRejected {
+    --status-bg: #4a1010;
+    --status-fg: #ff7a7a;
+    --status-border: #7a2020;
+  }
+
+  .statusInPurchase {
+    --status-bg: #0f2530;
+    --status-fg: #3dd6e0;
+    --status-border: #1a5060;
+  }
+
+  .statusPurchased {
+    --status-bg: #102a20;
+    --status-fg: #4dd98a;
+    --status-border: #1a5a38;
+  }
+
+  .statusConcluded {
+    --status-bg: #102030;
+    --status-fg: #60c8ff;
+    --status-border: #1a4060;
+  }
+
+  .statusCanceled {
+    --status-bg: #242424;
+    --status-fg: #888888;
+    --status-border: #444444;
+  }
+
+  .priorityEmergencial,
+  .priorityUrgente,
+  .priorityAlta,
+  .priorityMedia,
+  .priorityBaixa {
+    background-color: var(--priority-bg);
+    color: var(--priority-fg);
+    border-color: var(--priority-border);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.03),
+      inset 0 -1px 0 rgb(0 0 0 / 0.16);
+  }
+
+  .priorityEmergencial::before,
+  .priorityUrgente::before,
+  .priorityAlta::before,
+  .priorityMedia::before,
+  .priorityBaixa::before {
+    content: "";
+    width: 0.44rem;
+    height: 0.44rem;
+    border-radius: var(--radius-full);
+    background-color: var(--priority-fg);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--priority-fg) 36%, transparent);
+    margin-right: 0.38rem;
+    flex: 0 0 auto;
+  }
+
+  .priorityEmergencial {
+    --priority-bg: #4a1010;
+    --priority-fg: #ff7a7a;
+    --priority-border: #7a2020;
+  }
+
+  .priorityUrgente {
+    --priority-bg: #3d2b00;
+    --priority-fg: #ffb347;
+    --priority-border: #7a5200;
+  }
+
+  .priorityAlta {
+    --priority-bg: #3d2010;
+    --priority-fg: #ff9660;
+    --priority-border: #7a3a1a;
+  }
+
+  .priorityMedia {
+    --priority-bg: #0f2a42;
+    --priority-fg: #5aadff;
+    --priority-border: #1a4a7a;
+  }
+
+  .priorityBaixa {
+    --priority-bg: #0f2a1a;
+    --priority-fg: #6ade8a;
+    --priority-border: #1a5a2a;
+  }
+}

@@ -1,0 +1,274 @@
+@layer base {
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    font-family: var(--font-family-base);
+    font-weight: 500;
+    border-radius: var(--radius);
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color var(--animation-duration-fast) ease,
+      border-color var(--animation-duration-fast) ease,
+      color var(--animation-duration-fast) ease,
+      box-shadow var(--animation-duration-fast) ease,
+      transform var(--animation-duration-fast) ease;
+    outline: none;
+    border: 1px solid transparent;
+    position: relative;
+    box-shadow: var(--shadow);
+  }
+
+  .button:hover:not(.disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .button:active:not(.disabled) {
+    transform: translateY(0);
+    box-shadow: var(--shadow);
+  }
+
+  /* Focus styles - high contrast for accessibility */
+  .button:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 4px var(--ring);
+    outline: none;
+  }
+
+  /* Size variants - ensuring proper touch targets */
+  .sm {
+    height: 1.5rem;
+    padding: 0 var(--spacing-2);
+    font-size: 0.875rem;
+  }
+
+  .md {
+    height: 2.5rem;
+    padding: 0 var(--spacing-3);
+    font-size: 0.9375rem;
+  }
+
+  .lg {
+    height: 3rem;
+    padding: 0 var(--spacing-4);
+    font-size: 1rem;
+    border-radius: var(--radius-md);
+  }
+
+  /* Icon button sizes */
+  .icon,
+  .icon-md {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+  }
+
+  .icon-sm {
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+  }
+
+  .icon-lg {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border-radius: var(--radius-md);
+  }
+
+  /* Icon sizing */
+  .button svg {
+    flex-shrink: 0;
+  }
+
+  .sm svg,
+  .icon-sm svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .md svg,
+  .icon svg,
+  .icon-md svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .lg svg,
+  .icon-lg svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  /* Primary - White text on solid brand color (high contrast) */
+  .primary {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--primary) 88%, white 12%) 0%,
+      var(--primary) 100%
+    );
+    color: var(--primary-foreground);
+    border-color: color-mix(in srgb, var(--primary) 82%, black 18%);
+    --spinner-color: var(--primary-foreground);
+  }
+
+  .primary:hover {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--primary) 84%, white 16%) 0%,
+      color-mix(in srgb, var(--primary) 92%, black 8%) 100%
+    );
+    border-color: color-mix(in srgb, var(--primary) 74%, black 26%);
+  }
+
+  .primary:active {
+    background: color-mix(in srgb, var(--primary) 88%, black 12%);
+    border-color: color-mix(in srgb, var(--primary) 68%, black 32%);
+  }
+
+  .secondary {
+    background-color: color-mix(in srgb, var(--surface) 75%, var(--secondary) 25%);
+    color: var(--secondary-foreground);
+    border-color: color-mix(in srgb, var(--secondary) 58%, var(--border) 42%);
+    --spinner-color: var(--secondary-foreground);
+  }
+
+  .secondary:hover {
+    background-color: color-mix(in srgb, var(--surface) 62%, var(--secondary) 38%);
+    border-color: color-mix(in srgb, var(--secondary) 64%, var(--border) 36%);
+  }
+
+  .secondary:active {
+    background-color: color-mix(in srgb, var(--surface) 55%, var(--secondary) 45%);
+    border-color: color-mix(in srgb, var(--secondary) 70%, var(--border) 30%);
+  }
+
+  /* Destructive - White text on solid red (high contrast) */
+  .destructive {
+    background-color: color-mix(in srgb, var(--error) 88%, black 12%);
+    color: var(--error-foreground);
+    border-color: color-mix(in srgb, var(--error) 74%, black 26%);
+    --spinner-color: var(--error-foreground);
+  }
+
+  .destructive:hover {
+    background-color: color-mix(in srgb, var(--error) 80%, black 20%);
+    border-color: color-mix(in srgb, var(--error) 68%, black 32%);
+  }
+
+  .destructive:active {
+    background-color: color-mix(in srgb, var(--error) 72%, black 28%);
+    border-color: color-mix(in srgb, var(--error) 62%, black 38%);
+  }
+
+  .destructive:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 4px var(--error);
+  }
+
+  /* Outline - Brand color text with brand color border, no background */
+  .outline {
+    background-color: color-mix(in srgb, var(--surface) 94%, transparent);
+    border-color: color-mix(in srgb, var(--primary) 55%, var(--border) 45%);
+    color: color-mix(in srgb, var(--primary) 82%, white 18%);
+    --spinner-color: var(--primary);
+  }
+
+  .outline:hover {
+    background-color: color-mix(in srgb, var(--primary) 14%, var(--surface) 86%);
+    border-color: color-mix(in srgb, var(--primary) 68%, var(--border) 32%);
+    color: color-mix(in srgb, var(--primary) 92%, white 8%);
+  }
+
+  .outline:active {
+    background-color: color-mix(in srgb, var(--primary) 19%, var(--surface) 81%);
+    border-color: color-mix(in srgb, var(--primary) 74%, var(--border) 26%);
+    color: color-mix(in srgb, var(--primary) 96%, white 4%);
+  }
+
+  /* Ghost - Brand color text only, minimal styling until interaction */
+  .ghost {
+    background-color: transparent;
+    border-color: color-mix(in srgb, var(--border) 65%, transparent);
+    color: var(--foreground);
+    --spinner-color: var(--primary);
+  }
+
+  .ghost:hover {
+    background-color: color-mix(in srgb, var(--primary) 12%, var(--surface) 88%);
+    border-color: color-mix(in srgb, var(--primary) 42%, var(--border) 58%);
+    color: color-mix(in srgb, var(--primary) 88%, white 12%);
+  }
+
+  .ghost:active {
+    background-color: color-mix(in srgb, var(--primary) 18%, var(--surface) 82%);
+    border-color: color-mix(in srgb, var(--primary) 50%, var(--border) 50%);
+    color: color-mix(in srgb, var(--primary) 94%, white 6%);
+  }
+
+  /* Link - Brand color text, underline on hover */
+  .link {
+    background-color: transparent;
+    color: color-mix(in srgb, var(--primary) 90%, white 10%);
+    height: auto;
+    padding: 0;
+    text-decoration: none;
+    border: none;
+    border-radius: 0;
+    min-height: 2.75rem; /* Ensure touch target height */
+    display: inline-flex;
+    align-items: center;
+    --spinner-color: var(--primary);
+  }
+
+  .link:hover {
+    text-decoration: underline;
+    color: color-mix(in srgb, var(--primary) 98%, white 2%);
+    background-color: transparent;
+  }
+
+  .link:active {
+    color: color-mix(in srgb, var(--primary) 82%, white 18%);
+    background-color: transparent;
+  }
+
+  .link:focus-visible {
+    box-shadow: 0 0 0 2px var(--ring);
+    outline: none;
+    border-radius: 0.25rem;
+  }
+
+  /* Disabled state */
+  .disabled {
+    opacity: 0.48;
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  /* Dark mode - colors automatically adjust due to CSS variable system */
+  .dark .primary:focus-visible,
+  .dark .outline:focus-visible,
+  .dark .ghost:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 4px var(--ring);
+  }
+
+  .dark .destructive:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 4px var(--error);
+  }
+
+  .dark .link:focus-visible {
+    box-shadow: 0 0 0 2px var(--ring);
+  }
+}
