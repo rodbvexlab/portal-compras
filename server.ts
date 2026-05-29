@@ -1,5 +1,5 @@
 ﻿import "./loadEnv.js";
-import { Hono } from "hono";
+import { Hono, type MiddlewareHandler } from "hono";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { serve } from "@hono/node-server";
 import { existsSync } from "node:fs";
@@ -86,6 +86,58 @@ const passwordChangeExemptPaths = new Set([
   "/_api/auth/oauth_callback",
   "/_api/auth/establish_session",
 ]);
+
+const loginRateLimitWindowMs = 15 * 60 * 1000;
+const loginRateLimitCleanupIntervalMs = 5 * 60 * 1000;
+const loginRateLimitMaxAttempts = 10;
+
+type LoginRateLimitEntry = {
+  count: number;
+  windowExpiresAt: number;
+};
+
+const loginAttemptsByIp = new Map<string, LoginRateLimitEntry>();
+
+function getLoginRequestIp(c: Parameters<MiddlewareHandler>[0]) {
+  const forwardedFor = c.req.header("x-forwarded-for")?.split(",")[0]?.trim();
+  const realIp = c.req.header("x-real-ip")?.trim();
+
+  return forwardedFor || realIp || "unknown";
+}
+
+const loginRateLimitCleanupTimer = setInterval(() => {
+  const now = Date.now();
+
+  for (const [ip, entry] of loginAttemptsByIp.entries()) {
+    if (entry.windowExpiresAt <= now) {
+      loginAttemptsByIp.delete(ip);
+    }
+  }
+}, loginRateLimitCleanupIntervalMs);
+
+loginRateLimitCleanupTimer.unref?.();
+
+const loginRateLimitMiddleware: MiddlewareHandler = async (c, next) => {
+  const now = Date.now();
+  const ip = getLoginRequestIp(c);
+  const currentEntry = loginAttemptsByIp.get(ip);
+  const entry =
+    currentEntry && currentEntry.windowExpiresAt > now
+      ? currentEntry
+      : { count: 0, windowExpiresAt: now + loginRateLimitWindowMs };
+
+  if (entry.count >= loginRateLimitMaxAttempts) {
+    return c.json(
+      { error: "Muitas tentativas de login. Tente novamente em 15 minutos." },
+      429
+    );
+  }
+
+  entry.count += 1;
+  loginAttemptsByIp.set(ip, entry);
+
+  return next();
+};
 
 app.use("/_api/*", async (c, next) => {
   const path = c.req.path;
@@ -354,7 +406,11 @@ app.post("/_api/auth/admin_reset_password", async (c) => {
   }
 });
 
-app.post("/_api/auth/login_with_password", async (c) => runEndpoint(c, handleAuthLoginWithPassword));
+app.post(
+  "/_api/auth/login_with_password",
+  loginRateLimitMiddleware,
+  async (c) => runEndpoint(c, handleAuthLoginWithPassword)
+);
 
 app.post("/_api/solicitacoes/update-status", async (c) => runEndpoint(c, handleSolicitacoesUpdateStatus));
 
