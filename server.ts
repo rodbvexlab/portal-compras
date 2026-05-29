@@ -121,15 +121,15 @@ app.use("/_api/*", async (c, next) => {
   }
 });
 
-app.post("_api/auth/logout", async (c) => runEndpoint(c, handleAuthLogout));
+app.post("/_api/auth/logout", async (c) => runEndpoint(c, handleAuthLogout));
 
-app.get("_api/auth/session", async (c) => runEndpoint(c, handleAuthSession));
+app.get("/_api/auth/session", async (c) => runEndpoint(c, handleAuthSession));
 
-app.get("_api/setores/list", async (c) => runEndpoint(c, handleSetoresList));
+app.get("/_api/setores/list", async (c) => runEndpoint(c, handleSetoresList));
 
-app.get("_api/categorias/list", async (c) => runEndpoint(c, handleCategoriasList));
+app.get("/_api/categorias/list", async (c) => runEndpoint(c, handleCategoriasList));
 
-app.get("_api/users/list", async (c) => {
+app.get("/_api/users/list", async (c) => {
   try {
     const { handle } = await import("./endpoints/users/list_GET.js");
     const request = c.req.raw;
@@ -150,11 +150,11 @@ app.get("_api/users/list", async (c) => {
   }
 });
 
-app.get("_api/solicitacoes/list", async (c) => runEndpoint(c, handleSolicitacoesList));
+app.get("/_api/solicitacoes/list", async (c) => runEndpoint(c, handleSolicitacoesList));
 
-app.get("_api/solicitacoes/stats", async (c) => runEndpoint(c, handleSolicitacoesStats));
+app.get("/_api/solicitacoes/stats", async (c) => runEndpoint(c, handleSolicitacoesStats));
 
-app.get("_api/relatorios/executivo-pdf", async (c) => {
+app.get("/_api/relatorios/executivo-pdf", async (c) => {
   try {
     const { handle } = await import("./endpoints/relatorios/executivo-pdf_GET.js");
     const request = c.req.raw;
@@ -175,7 +175,7 @@ app.get("_api/relatorios/executivo-pdf", async (c) => {
   }
 });
 
-app.get("_api/auth/oauth_callback", async (c) => {
+app.get("/_api/auth/oauth_callback", async (c) => {
   try {
     const { handle } = await import("./endpoints/auth/oauth_callback_GET.js");
     const request = c.req.raw;
@@ -196,7 +196,7 @@ app.get("_api/auth/oauth_callback", async (c) => {
   }
 });
 
-app.get("_api/auth/oauth_authorize", async (c) => {
+app.get("/_api/auth/oauth_authorize", async (c) => {
   try {
     const { handle } = await import("./endpoints/auth/oauth_authorize_GET.js");
     const request = c.req.raw;
@@ -217,14 +217,14 @@ app.get("_api/auth/oauth_authorize", async (c) => {
   }
 });
 
-app.post("_api/solicitacoes/create", async (c) => runEndpoint(c, handleSolicitacoesCreate));
+app.post("/_api/solicitacoes/create", async (c) => runEndpoint(c, handleSolicitacoesCreate));
 
 app.post(
-  "_api/solicitacoes/admin-adjust",
+  "/_api/solicitacoes/admin-adjust",
   async (c) => runEndpoint(c, handleSolicitacoesAdminAdjust)
 );
 
-app.post("_api/users/create", async (c) => {
+app.post("/_api/users/create", async (c) => {
   try {
     const { handle } = await import("./endpoints/users/create_POST.js");
     const request = c.req.raw;
@@ -245,7 +245,7 @@ app.post("_api/users/create", async (c) => {
   }
 });
 
-app.post("_api/users/update", async (c) => {
+app.post("/_api/users/update", async (c) => {
   try {
     const { handle } = await import("./endpoints/users/update_POST.js");
     const request = c.req.raw;
@@ -266,7 +266,7 @@ app.post("_api/users/update", async (c) => {
   }
 });
 
-app.post("_api/users/delete", async (c) => {
+app.post("/_api/users/delete", async (c) => {
   try {
     const { handle } = await import("./endpoints/users/delete_POST.js");
     const request = c.req.raw;
@@ -287,11 +287,11 @@ app.post("_api/users/delete", async (c) => {
   }
 });
 
-app.post("_api/solicitacoes/update", async (c) => runEndpoint(c, handleSolicitacoesUpdate));
+app.post("/_api/solicitacoes/update", async (c) => runEndpoint(c, handleSolicitacoesUpdate));
 
 app.post("/_api/solicitacoes/delete", async (c) => runEndpoint(c, handleSolicitacoesDelete));
 
-app.post("_api/auth/establish_session", async (c) => {
+app.post("/_api/auth/establish_session", async (c) => {
   try {
     const { handle } = await import("./endpoints/auth/establish_session_POST.js");
     const request = c.req.raw;
@@ -312,7 +312,7 @@ app.post("_api/auth/establish_session", async (c) => {
   }
 });
 
-app.post("_api/auth/change_password", async (c) => {
+app.post("/_api/auth/change_password", async (c) => {
   try {
     const { handle } = await import("./endpoints/auth/change_password_POST.js");
     const request = c.req.raw;
@@ -333,7 +333,7 @@ app.post("_api/auth/change_password", async (c) => {
   }
 });
 
-app.post("_api/auth/admin_reset_password", async (c) => {
+app.post("/_api/auth/admin_reset_password", async (c) => {
   try {
     const { handle } = await import("./endpoints/auth/admin_reset_password_POST.js");
     const request = c.req.raw;
@@ -354,11 +354,11 @@ app.post("_api/auth/admin_reset_password", async (c) => {
   }
 });
 
-app.post("_api/auth/login_with_password", async (c) => runEndpoint(c, handleAuthLoginWithPassword));
+app.post("/_api/auth/login_with_password", async (c) => runEndpoint(c, handleAuthLoginWithPassword));
 
-app.post("_api/solicitacoes/update-status", async (c) => runEndpoint(c, handleSolicitacoesUpdateStatus));
+app.post("/_api/solicitacoes/update-status", async (c) => runEndpoint(c, handleSolicitacoesUpdateStatus));
 
-app.post("_api/auth/register_with_password", async (c) => {
+app.post("/_api/auth/register_with_password", async (c) => {
   try {
     const { handle } = await import("./endpoints/auth/register_with_password_POST.js");
     const request = c.req.raw;
@@ -379,7 +379,7 @@ app.post("_api/auth/register_with_password", async (c) => {
   }
 });
 
-app.get("_api/solicitacoes/detail", async (c) => runEndpoint(c, handleSolicitacoesDetail));
+app.get("/_api/solicitacoes/detail", async (c) => runEndpoint(c, handleSolicitacoesDetail));
 
 if (existsSync("./static")) {
   app.use("/*", serveStatic({ root: "./static" }));
@@ -389,7 +389,7 @@ if (existsSync("./dist")) {
   app.use("/*", serveStatic({ root: "./dist" }));
 }
 
-app.get("*", async (c, next) => {
+app.get("/*", async (c, next) => {
   const p = c.req.path;
 
   if (p.startsWith("/_api")) {
