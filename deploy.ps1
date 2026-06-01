@@ -173,7 +173,24 @@ try {
     Fail-Step -StepName "Git pull" -ErrorRecord $_
   }
 
-  Write-Step "[3/8] Instalando dependencias com npm ci --legacy-peer-deps..."
+  Write-Step "[3/8] Parando o servico PortalCompras..."
+  try {
+    if (-not (Test-Path $NssmPath)) {
+      throw "NSSM nao encontrado em $NssmPath."
+    }
+
+    Invoke-ExternalCommand `
+      -Command $NssmPath `
+      -Arguments @("stop", $ServiceName) `
+      -FailureMessage "Falha ao parar o servico $ServiceName."
+
+    Start-Sleep -Seconds 3
+    $CompletedSteps.Add("Parada do servico: OK") | Out-Null
+  } catch {
+    Fail-Step -StepName "Parar servico" -ErrorRecord $_
+  }
+
+  Write-Step "[4/8] Instalando dependencias com npm ci --legacy-peer-deps..."
   try {
     Push-Location $AppDir
     try {
@@ -190,7 +207,7 @@ try {
     Fail-Step -StepName "Install de dependencias" -ErrorRecord $_
   }
 
-  Write-Step "[4/8] Executando build..."
+  Write-Step "[5/8] Executando build..."
   try {
     Push-Location $AppDir
     try {
@@ -205,23 +222,6 @@ try {
     $CompletedSteps.Add("Build: OK") | Out-Null
   } catch {
     Fail-Step -StepName "Build" -ErrorRecord $_
-  }
-
-  Write-Step "[5/8] Parando o servico PortalCompras..."
-  try {
-    if (-not (Test-Path $NssmPath)) {
-      throw "NSSM nao encontrado em $NssmPath."
-    }
-
-    Invoke-ExternalCommand `
-      -Command $NssmPath `
-      -Arguments @("stop", $ServiceName) `
-      -FailureMessage "Falha ao parar o servico $ServiceName."
-
-    Start-Sleep -Seconds 3
-    $CompletedSteps.Add("Parada do servico: OK") | Out-Null
-  } catch {
-    Fail-Step -StepName "Parar servico" -ErrorRecord $_
   }
 
   Write-Step "[6/8] Iniciando o servico PortalCompras..."
