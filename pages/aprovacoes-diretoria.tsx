@@ -2,9 +2,9 @@ import React, { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import { Briefcase } from "lucide-react";
-import { toast } from "sonner";
 
 import { useAuth } from "../helpers/useAuth";
+import { toastError, toastSuccess } from "../helpers/toast";
 import {
   useMutationUpdateStatus,
   useQuerySolicitacoes,
@@ -19,6 +19,7 @@ import {
 
 import { Button } from "../components/Button";
 import { Badge } from "../components/Badge";
+import { ConfirmDialog } from "../components/ConfirmDialog";
 import {
   Dialog,
   DialogContent,
@@ -63,10 +64,11 @@ export default function AprovacoesDiretoria() {
     titulo: string;
   } | null>(null);
   const [comentario, setComentario] = useState("");
+  const [rejectConfirmOpen, setRejectConfirmOpen] = useState(false);
 
   const { mutate: updateStatus, isPending } = useMutationUpdateStatus();
 
-  const handleConfirm = () => {
+  const executeStatusUpdate = () => {
     if (!selectedAction) return;
 
     let statusNovo: string;
@@ -87,15 +89,40 @@ export default function AprovacoesDiretoria() {
       },
       {
         onSuccess: () => {
+          const actionType = selectedAction.type;
           setSelectedAction(null);
+          setRejectConfirmOpen(false);
           setComentario("");
-          toast.success("Deliberação registrada com sucesso.");
+          toastSuccess(
+            actionType === "approve"
+              ? "Solicitação aprovada com sucesso."
+              : actionType === "reject"
+                ? "Solicitação reprovada."
+                : "Deliberação registrada com sucesso."
+          );
         },
-        onError: (err: any) => {
-          toast.error(err?.message || "Ocorreu um erro ao processar a solicitação.");
+        onError: () => {
+          toastError(
+            selectedAction.type === "approve"
+              ? "Erro ao aprovar. Tente novamente."
+              : selectedAction.type === "reject"
+                ? "Erro ao reprovar. Tente novamente."
+                : "Ocorreu um erro ao processar a solicitação."
+          );
         },
       }
     );
+  };
+
+  const handleConfirm = () => {
+    if (!selectedAction) return;
+
+    if (selectedAction.type === "reject") {
+      setRejectConfirmOpen(true);
+      return;
+    }
+
+    executeStatusUpdate();
   };
 
   const closeDialog = () => {
@@ -315,6 +342,17 @@ export default function AprovacoesDiretoria() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={rejectConfirmOpen}
+        onOpenChange={setRejectConfirmOpen}
+        title="Reprovar solicitação"
+        description="Confirma a reprovação desta solicitação?"
+        confirmLabel="Reprovar"
+        variant="danger"
+        loading={isPending}
+        onConfirm={executeStatusUpdate}
+      />
     </div>
   );
 }

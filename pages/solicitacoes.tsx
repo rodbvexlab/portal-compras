@@ -2,13 +2,13 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
-import { toast } from "sonner";
 
 import {
   useQuerySolicitacoesLiveWhen,
   useMutationCreateSolicitacao,
 } from "../helpers/useSolicitacoes";
 import { useAuth } from "../helpers/useAuth";
+import { toastError, toastSuccess } from "../helpers/toast";
 import { useQuerySetores } from "../helpers/useSetores";
 import { useQueryCategorias } from "../helpers/useCategorias";
 import { hasAccessGroup } from "../helpers/accessGroups";
@@ -229,10 +229,10 @@ export default function Solicitacoes() {
       onSuccess: () => {
         setDialogOpen(false);
         resetForm();
-        toast.success("Solicitação registrada com sucesso.");
+        toastSuccess("Solicitação criada com sucesso.");
       },
-      onError: (err: any) => {
-        toast.error(err?.message || "Ocorreu um erro ao registrar a solicitação.");
+      onError: () => {
+        toastError("Erro ao criar solicitação. Tente novamente.");
       },
     });
   };

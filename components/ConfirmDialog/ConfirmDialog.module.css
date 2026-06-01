@@ -1,0 +1,162 @@
+@layer base {
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background-color: color-mix(in srgb, black 56%, transparent);
+    z-index: var(--z-overlay);
+  }
+
+  .content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: min(92vw, 28rem);
+    transform: translate(-50%, -50%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: var(--popup);
+    color: var(--popup-foreground);
+    box-shadow: var(--shadow-lg);
+    z-index: var(--z-overlay);
+    padding: var(--spacing-6);
+  }
+
+  .header {
+    display: grid;
+    gap: var(--spacing-2);
+    padding-right: var(--spacing-8);
+  }
+
+  .title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--popup-foreground);
+  }
+
+  .description {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.925rem;
+    line-height: 1.5;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-6);
+  }
+
+  .cancelButton,
+  .confirmButton,
+  .closeButton {
+    font: inherit;
+  }
+
+  .cancelButton,
+  .confirmButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    min-height: 2.5rem;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    padding: 0 var(--spacing-3);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color var(--animation-duration-fast) ease,
+      border-color var(--animation-duration-fast) ease,
+      color var(--animation-duration-fast) ease,
+      opacity var(--animation-duration-fast) ease;
+  }
+
+  .cancelButton {
+    background-color: transparent;
+    border-color: var(--border);
+    color: var(--foreground);
+  }
+
+  .cancelButton:hover:not(:disabled) {
+    background-color: var(--muted);
+  }
+
+  .confirmButton {
+    color: var(--primary-foreground);
+    background-color: var(--primary);
+    border-color: color-mix(in srgb, var(--primary) 74%, black 26%);
+  }
+
+  .default:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--primary) 86%, white 14%);
+  }
+
+  .danger {
+    color: var(--error-foreground);
+    background-color: color-mix(in srgb, var(--error) 88%, black 12%);
+    border-color: color-mix(in srgb, var(--error) 72%, black 28%);
+  }
+
+  .danger:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--error) 80%, black 20%);
+  }
+
+  .warning {
+    color: var(--warning-foreground);
+    background-color: var(--warning);
+    border-color: color-mix(in srgb, var(--warning) 72%, black 28%);
+  }
+
+  .warning:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--warning) 86%, white 14%);
+  }
+
+  .cancelButton:disabled,
+  .confirmButton:disabled,
+  .closeButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .closeButton {
+    position: absolute;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: var(--radius-full);
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    cursor: pointer;
+  }
+
+  .closeButton:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--muted) 78%, white 22%);
+    color: var(--foreground);
+  }
+
+  .closeButton svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .spinner {
+    width: 1rem;
+    height: 1rem;
+    animation: spin 0.9s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

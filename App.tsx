@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 import { GlobalContextProviders } from "./components/_globalContextProviders";
 import PageLayout_0 from "./pages/login.pageLayout.tsx";
 import PageLayout_1 from "./pages/_index.pageLayout.tsx";
@@ -55,7 +56,30 @@ const fileNameToComponent = new Map<string, React.ComponentType<any>>([
 ]);
 
 function RouteLoadingFallback() {
-  return <div style={{ minHeight: "20vh" }} />;
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <style>
+        {"@keyframes route-loading-spin { to { transform: rotate(360deg); } }"}
+      </style>
+      <Loader2
+        aria-label="Carregando"
+        className="animate-spin"
+        style={{
+          width: 32,
+          height: 32,
+          color: "#8a8f98",
+          animation: "route-loading-spin 1s linear infinite",
+        }}
+      />
+    </div>
+  );
 }
 
 function makePageRoute(filename: string) {

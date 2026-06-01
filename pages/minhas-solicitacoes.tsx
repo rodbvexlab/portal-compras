@@ -30,7 +30,7 @@ import { SolicitacaoStatusArrayValues } from '../helpers/schema';
 import { EMPRESA_OPTIONS } from '../helpers/solicitacoesDomain';
 import { schema as createSchema, InputType as CreateSolicitacaoInput } from '../endpoints/solicitacoes/create_POST.schema';
 import { Plus, Calendar as CalendarIcon } from 'lucide-react';
-import { toast } from 'sonner';
+import { toastError, toastSuccess } from '../helpers/toast';
 import styles from './minhas-solicitacoes.module.css';
 
 type OptionItem = {
@@ -192,10 +192,10 @@ export default function MinhasSolicitacoes() {
       onSuccess: () => {
         setDialogOpen(false);
         resetForm();
-        toast.success('Solicitacao registrada com sucesso.');
+        toastSuccess('Solicitação criada com sucesso.');
       },
-      onError: (err: any) => {
-        toast.error(err?.message || 'Ocorreu um erro ao registrar a solicitacao.');
+      onError: () => {
+        toastError('Erro ao criar solicitação. Tente novamente.');
       },
     });
   };

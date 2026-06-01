@@ -2,9 +2,9 @@
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, CircleX, Eye, RefreshCcw } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { useAuth } from '../helpers/useAuth';
+import { toastError, toastSuccess } from '../helpers/toast';
 import {
   useMutationUpdateStatus,
   useQuerySolicitacoesOperational,
@@ -27,6 +27,7 @@ import {
 
 import { Button } from '../components/Button';
 import { Badge } from '../components/Badge';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 import {
   Dialog,
   DialogContent,
@@ -131,6 +132,7 @@ export default function Aprovacoes() {
   const [comentario, setComentario] = useState('');
   const [metodoPagamento, setMetodoPagamento] = useState<string>('_empty');
   const [parcelas, setParcelas] = useState('1');
+  const [rejectConfirmOpen, setRejectConfirmOpen] = useState(false);
 
   const { mutate: updateStatus, isPending } = useMutationUpdateStatus();
 
@@ -145,35 +147,8 @@ export default function Aprovacoes() {
     metodoPagamento === '_empty' ? null : metodoPagamento
   );
 
-  const handleConfirm = () => {
+  const executeStatusUpdate = (statusNovo: string) => {
     if (!selectedAction || !user || !currentFlow) return;
-
-    let statusNovo: string;
-
-    if (selectedAction.type === 'approve') {
-      statusNovo = 'aprovado_para_compra';
-
-      if (currentFlow.requiresPaymentDetails && metodoPagamento === '_empty') {
-        toast.error('Selecione o método de pagamento para aprovar.');
-        return;
-      }
-
-      if (
-        currentFlow.requiresPaymentDetails &&
-        isCardPayment &&
-        (!parcelas || Number(parcelas) < 1)
-      ) {
-        toast.error('Selecione o parcelamento para pagamento no cartão.');
-        return;
-      }
-    } else {
-      statusNovo = 'rejeitado';
-
-      if (!comentario.trim()) {
-        toast.error('Informe a justificativa da reprovação.');
-        return;
-      }
-    }
 
     updateStatus(
       {
@@ -193,14 +168,53 @@ export default function Aprovacoes() {
       },
       {
         onSuccess: () => {
+          const actionType = selectedAction.type;
+          setRejectConfirmOpen(false);
           resetDialog();
-          toast.success(currentFlow.successMessage);
+          toastSuccess(
+            actionType === 'approve'
+              ? 'Solicitação aprovada com sucesso.'
+              : 'Solicitação reprovada.'
+          );
         },
-        onError: (err) => {
-          toast.error(err.message || 'Ocorreu um erro ao processar.');
+        onError: () => {
+          toastError(
+            selectedAction.type === 'approve'
+              ? 'Erro ao aprovar. Tente novamente.'
+              : 'Erro ao reprovar. Tente novamente.'
+          );
         },
       }
     );
+  };
+
+  const handleConfirm = () => {
+    if (!selectedAction || !user || !currentFlow) return;
+
+    if (selectedAction.type === 'approve') {
+      if (currentFlow.requiresPaymentDetails && metodoPagamento === '_empty') {
+        toastError('Selecione o método de pagamento para aprovar.');
+        return;
+      }
+
+      if (
+        currentFlow.requiresPaymentDetails &&
+        isCardPayment &&
+        (!parcelas || Number(parcelas) < 1)
+      ) {
+        toastError('Selecione o parcelamento para pagamento no cartão.');
+        return;
+      }
+
+      executeStatusUpdate('aprovado_para_compra');
+    } else {
+      if (!comentario.trim()) {
+        toastError('Informe a justificativa da reprovação.');
+        return;
+      }
+
+      setRejectConfirmOpen(true);
+    }
   };
 
   const isCommentRequired = selectedAction?.type === 'reject';
@@ -556,6 +570,17 @@ export default function Aprovacoes() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={rejectConfirmOpen}
+        onOpenChange={setRejectConfirmOpen}
+        title="Reprovar solicitação"
+        description="Confirma a reprovação desta solicitação?"
+        confirmLabel="Reprovar"
+        variant="danger"
+        loading={isPending}
+        onConfirm={() => executeStatusUpdate('rejeitado')}
+      />
     </div>
   );
 }

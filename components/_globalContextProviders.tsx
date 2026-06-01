@@ -2,7 +2,6 @@ import { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "./Tooltip";
 import { ThemeModeProvider } from "../helpers/themeMode";
-import { SonnerToaster } from "./SonnerToaster";
 import { ScrollToHashElement } from "./ScrollToHashElement";
 import { AuthProvider } from "../helpers/useAuth";
 
@@ -28,7 +27,6 @@ export const GlobalContextProviders = ({
         <AuthProvider>
           <TooltipProvider>
             {children}
-            <SonnerToaster />
           </TooltipProvider>
         </AuthProvider>
       </ThemeModeProvider>

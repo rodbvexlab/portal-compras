@@ -68,6 +68,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../components/Dialog";
+import { ConfirmDialog } from "../components/ConfirmDialog";
+import { toastError, toastSuccess } from "../helpers/toast";
 
 import styles from "./solicitacoes.$solicitacaoId.module.css";
 
@@ -194,6 +196,7 @@ export default function SolicitacaoDetail() {
     justificativa: "",
   });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteJustificativa, setDeleteJustificativa] = useState("");
 
   const { mutate: updateStatus, isPending: isUpdatingStatus } =
@@ -556,10 +559,10 @@ export default function SolicitacaoDetail() {
       {
         onSuccess: () => {
           setIsEditingReturned(false);
-          toast.success("Ajustes salvos com sucesso.");
+          toastSuccess("Rascunho salvo.");
         },
-        onError: (err: any) => {
-          toast.error(err?.message || "Não foi possível salvar os ajustes.");
+        onError: () => {
+          toastError("Erro ao salvar rascunho.");
         },
       }
     );
@@ -784,17 +787,27 @@ export default function SolicitacaoDetail() {
           });
 
           setDeleteDialogOpen(false);
+          setDeleteConfirmOpen(false);
           setDeleteJustificativa("");
-          toast.success("Solicitacao excluida permanentemente.");
+          toastSuccess("Solicitação excluída com sucesso.");
 
           // Forca sincronizacao visual completa da listagem apos hard delete.
           window.location.replace(`/solicitacoes?refresh=${Date.now()}`);
         },
-        onError: (err: any) => {
-          toast.error(err?.message || "Nao foi possivel excluir a solicitacao.");
+        onError: () => {
+          toastError("Erro ao excluir solicitação. Tente novamente.");
         },
       }
     );
+  };
+
+  const handleOpenDeleteConfirmation = () => {
+    if (!deleteJustificativa.trim()) {
+      toast.error("Informe a justificativa para exclusao administrativa.");
+      return;
+    }
+
+    setDeleteConfirmOpen(true);
   };
 
   if (error) {
@@ -1874,7 +1887,7 @@ export default function SolicitacaoDetail() {
             <Button
               type="button"
               variant="destructive"
-              onClick={handleDeleteAdministrativo}
+              onClick={handleOpenDeleteConfirmation}
               disabled={
                 deleteSolicitacaoMutation.isPending ||
                 deleteJustificativa.trim().length === 0
@@ -1887,6 +1900,17 @@ export default function SolicitacaoDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        title="Excluir solicitação"
+        description="Esta ação não pode ser desfeita. A solicitação será removida permanentemente."
+        confirmLabel="Excluir"
+        variant="danger"
+        loading={deleteSolicitacaoMutation.isPending}
+        onConfirm={handleDeleteAdministrativo}
+      />
     </div>
   );
 }
