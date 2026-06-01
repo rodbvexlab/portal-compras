@@ -19,7 +19,34 @@ import { handle as handleSolicitacoesUpdate } from "./endpoints/solicitacoes/upd
 import { handle as handleSolicitacoesUpdateStatus } from "./endpoints/solicitacoes/update-status_POST";
 import { handle as handleSolicitacoesDelete } from "./endpoints/solicitacoes/delete_POST";
 
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  "font-src 'self' data:",
+  "connect-src 'self'",
+].join("; ");
+
+function setSecurityHeaders(c: Parameters<MiddlewareHandler>[0]) {
+  c.header("X-Content-Type-Options", "nosniff");
+  c.header("X-Frame-Options", "DENY");
+  c.header("X-XSS-Protection", "1; mode=block");
+  c.header("Referrer-Policy", "strict-origin-when-cross-origin");
+  c.header("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  c.header("Content-Security-Policy", contentSecurityPolicy);
+}
+
+const securityHeadersMiddleware: MiddlewareHandler = async (c, next) => {
+  setSecurityHeaders(c);
+  await next();
+
+  setSecurityHeaders(c);
+};
+
 const app = new Hono();
+
+app.use("*", securityHeadersMiddleware);
 
 type ResponseLike = {
   status: number;
