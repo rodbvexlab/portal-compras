@@ -233,7 +233,7 @@ export default function ComprasTI() {
     if (!compraTarget) return;
 
     if (!valorRealCompraUnitario || Number(valorRealCompraUnitario) <= 0) {
-      toast.error("Informe o valor real unit?rio da compra.");
+      toast.error("Informe o valor real unitário da compra.");
       return;
     }
 
@@ -281,17 +281,17 @@ export default function ComprasTI() {
     if (!ajusteTarget) return;
 
     if (!ajusteQuantidade || Number(ajusteQuantidade) < 1) {
-      toast.error("Informe uma quantidade v?lida para o ajuste.");
+      toast.error("Informe uma quantidade válida para o ajuste.");
       return;
     }
 
     if (!ajusteValorUnitario || Number(ajusteValorUnitario) <= 0) {
-      toast.error("Informe o valor real unit?rio para recalcular o total.");
+      toast.error("Informe o valor real unitário para recalcular o total.");
       return;
     }
 
     if (!ajusteJustificativa.trim()) {
-      toast.error("A justificativa do ajuste ? obrigat?ria.");
+      toast.error("A justificativa do ajuste é obrigatória.");
       return;
     }
 
@@ -397,7 +397,7 @@ export default function ComprasTI() {
           </div>
 
           <div className={styles.compactInfoRow}>
-            <span className={styles.infoLabel}>Estimado Unit?rio</span>
+            <span className={styles.infoLabel}>Estimado Unitário</span>
             <span className={styles.infoValue}>{formatCurrency(item.valorEstimado)}</span>
           </div>
 
@@ -409,7 +409,7 @@ export default function ComprasTI() {
           {(item.status === "comprado" || item.status === "concluido") && (
             <>
               <div className={styles.compactInfoRow}>
-                <span className={styles.infoLabel}>Real Unit?rio</span>
+                <span className={styles.infoLabel}>Real Unitário</span>
                 <span className={styles.infoValue}>
                   {valorRealUnitario !== null ? formatCurrency(valorRealUnitario) : "-"}
                 </span>
@@ -779,7 +779,7 @@ export default function ComprasTI() {
           <DialogHeader>
             <DialogTitle>Registrar compra real</DialogTitle>
             <DialogDescription>
-              Informe o valor unit?rio real e valide o total calculado automaticamente.
+              Informe o valor unitário real e valide o total calculado automaticamente.
             </DialogDescription>
           </DialogHeader>
 
@@ -788,14 +788,14 @@ export default function ComprasTI() {
               <div style={{ marginBottom: 12, display: "grid", gap: 6 }}>
                 <strong>{compraTarget.titulo}</strong>
                 <span>Quantidade: {compraTarget.quantidade}</span>
-                <span>Estimado unit?rio: {formatCurrency(compraTarget.valorEstimado)}</span>
+                <span>Estimado unitário: {formatCurrency(compraTarget.valorEstimado)}</span>
                 <span>Estimado total: {formatCurrency(compraTotalEstimado)}</span>
               </div>
             ) : null}
 
             <div className={styles.compraGridTwo}>
               <div className={styles.compraField}>
-                <label className={styles.textareaLabel}>Valor real unit?rio (R$)</label>
+                <label className={styles.textareaLabel}>Valor real unitário (R$)</label>
                 <Input
                   type="number"
                   step="0.01"
@@ -877,7 +877,7 @@ export default function ComprasTI() {
           <DialogHeader>
             <DialogTitle>Ajuste operacional de compra</DialogTitle>
             <DialogDescription>
-              Ajuste quantidade e/ou valor unit?rio real com justificativa obrigat?ria.
+              Ajuste quantidade e/ou valor unitário real com justificativa obrigatória.
             </DialogDescription>
           </DialogHeader>
 
@@ -901,7 +901,7 @@ export default function ComprasTI() {
               </div>
 
               <div className={styles.compraField}>
-                <label className={styles.textareaLabel}>Valor real unit?rio (R$)</label>
+                <label className={styles.textareaLabel}>Valor real unitário (R$)</label>
                 <Input
                   type="number"
                   step="0.01"
@@ -937,16 +937,16 @@ export default function ComprasTI() {
                 <Textarea
                   value={ajusteObservacaoCompra}
                   onChange={(e) => setAjusteObservacaoCompra(e.target.value)}
-                  placeholder="Detalhe t?cnico do ajuste realizado..."
+                  placeholder="Detalhe técnico do ajuste realizado..."
                 />
               </div>
 
               <div className={`${styles.compraField} ${styles.spanTwo}`}>
-                <label className={styles.textareaLabel}>Justificativa do ajuste (obrigat?ria)</label>
+                <label className={styles.textareaLabel}>Justificativa do ajuste (obrigatória)</label>
                 <Textarea
                   value={ajusteJustificativa}
                   onChange={(e) => setAjusteJustificativa(e.target.value)}
-                  placeholder="Explique por que este ajuste operacional foi necess?rio..."
+                  placeholder="Explique por que este ajuste operacional foi necessário..."
                 />
               </div>
             </div>

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -1691,7 +1691,7 @@ export default function SolicitacaoDetail() {
           ) : (
             <div className={styles.timeline}>
               {data.ajustesOperacionais.map((ajuste) => (
-                <div key={ajuste.id} className={styles.timelineItem}>
+                <div key={ajuste.id} className={styles.timelineItem} data-type="ajuste">
                   <div className={styles.timelineDot} />
                   <div className={styles.timelineContent}>
                     <div className={styles.timelineHeader}>
@@ -1795,7 +1795,7 @@ export default function SolicitacaoDetail() {
           ) : (
             <div className={styles.timeline}>
               {data.historico.map((h) => (
-                <div key={h.id} className={styles.timelineItem}>
+                <div key={h.id} className={styles.timelineItem} data-status={h.statusNovo}>
                   <div className={styles.timelineDot} />
                   <div className={styles.timelineContent}>
                     <div className={styles.timelineHeader}>

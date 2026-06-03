@@ -1,4 +1,4 @@
-﻿.container {
+.container {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-9);
@@ -161,8 +161,8 @@
 .statCard {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--card) 94%, black 6%) 0%,
-    color-mix(in srgb, var(--card) 84%, black 16%) 100%
+    color-mix(in srgb, var(--card) 96%, black 4%) 0%,
+    color-mix(in srgb, var(--card) 90%, black 10%) 100%
   );
   border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
   border-radius: var(--radius-lg);
@@ -175,6 +175,14 @@
   position: relative;
   overflow: hidden;
   justify-content: space-between;
+  transition: all var(--animation-duration-normal) cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: color-mix(in srgb, var(--primary) 32%, var(--border) 68%);
 }
 
 .statCard::before {
@@ -182,14 +190,46 @@
   position: absolute;
   inset: 0 auto auto 0;
   width: 100%;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--border) 65%, var(--primary) 35%) 0%,
-    color-mix(in srgb, var(--primary) 8%, transparent) 72%,
-    transparent 100%
-  );
+  height: 3px;
+  background: var(--kpi-color, var(--primary));
+  transition: all var(--animation-duration-normal) ease;
 }
+
+.statCard:hover::before {
+  opacity: 0.9;
+}
+
+/* Card category colors */
+.statCard:nth-child(1),
+.statCard[class*="financeiro"],
+.statCard:has([class*="financeiro"]) {
+  --kpi-color: #c8a256;
+}
+
+.statCard:nth-child(2),
+.statCard[class*="volume"],
+.statCard:has([class*="volume"]) {
+  --kpi-color: #6b849d;
+}
+
+.statCard:nth-child(3),
+.statCard[class*="eficiência"],
+.statCard[class*="eficiencia"],
+.statCard:has([class*="eficiência"]),
+.statCard:has([class*="eficiencia"]) {
+  --kpi-color: #3f9771;
+}
+
+.statCard:nth-child(4),
+.statCard[class*="planejamento"],
+.statCard:has([class*="planejamento"]) {
+  --kpi-color: #848b96;
+}
+
+.statCard:nth-child(1) { animation-delay: 0.05s; }
+.statCard:nth-child(2) { animation-delay: 0.12s; }
+.statCard:nth-child(3) { animation-delay: 0.19s; }
+.statCard:nth-child(4) { animation-delay: 0.26s; }
 
 .statCard h3 {
   font-size: 0.72rem;
@@ -234,8 +274,9 @@
 }
 
 .statValue {
-  font-size: clamp(1.72rem, 2.3vw, 2.18rem);
-  font-weight: 720;
+  font-size: 2rem;
+  font-weight: 600;
+  font-family: var(--font-family-heading);
   line-height: 1.02;
   color: var(--foreground);
   letter-spacing: -0.01em;
@@ -253,8 +294,9 @@
 }
 
 .executiveStatValue {
-  font-size: clamp(1.7rem, 2.12vw, 2.26rem);
-  font-weight: 780;
+  font-size: 2rem;
+  font-weight: 600;
+  font-family: var(--font-family-heading);
   letter-spacing: -0.02em;
 }
 
@@ -300,6 +342,8 @@
   );
   box-shadow: var(--shadow);
   min-width: 0;
+  animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.32s;
 }
 
 .dashboardError {

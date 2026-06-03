@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, Zap } from "lucide-react";
+import superjson from "superjson";
 
 import {
   useQuerySolicitacoesLiveWhen,
@@ -25,7 +26,11 @@ import { calculateEstimatedTotal } from "../helpers/monetary";
 import {
   SolicitacaoStatusArrayValues,
 } from "../helpers/schema";
-import { EMPRESA_OPTIONS } from "../helpers/solicitacoesDomain";
+import {
+  CANAL_COMPRA_OPTIONS,
+  EMPRESA_OPTIONS,
+  METODO_PAGAMENTO_OPTIONS,
+} from "../helpers/solicitacoesDomain";
 
 import { Button } from "../components/Button";
 import { Badge } from "../components/Badge";
@@ -79,6 +84,21 @@ type FormValues = {
   linkProduto: string;
 };
 
+type CompraDiretaFormValues = {
+  titulo: string;
+  descricao: string;
+  valorUnitarioEstimado: number;
+  valorRealUnitario: number;
+  quantidade: number;
+  prioridade: CreateSolicitacaoInput["prioridade"];
+  empresa: CreateSolicitacaoInput["empresa"] | "";
+  setorId: number;
+  categoriaId: number;
+  canalCompra: string;
+  metodoPagamento: string;
+  parcelas: number;
+};
+
 const EMPTY_FORM_VALUES: FormValues = {
   titulo: "",
   descricao: "",
@@ -89,6 +109,21 @@ const EMPTY_FORM_VALUES: FormValues = {
   setorId: 0,
   categoriaId: 0,
   linkProduto: "",
+};
+
+const EMPTY_COMPRA_DIRETA_FORM_VALUES: CompraDiretaFormValues = {
+  titulo: "",
+  descricao: "",
+  valorUnitarioEstimado: 0,
+  valorRealUnitario: 0,
+  quantidade: 1,
+  prioridade: "media",
+  empresa: "",
+  setorId: 0,
+  categoriaId: 0,
+  canalCompra: "",
+  metodoPagamento: "",
+  parcelas: 1,
 };
 
 const PRIORIDADE_OPTIONS: CreateSolicitacaoInput["prioridade"][] = [
@@ -130,6 +165,44 @@ function mapFormToPayload(values: FormValues): CreateSolicitacaoInput {
   };
 }
 
+async function postCompraDireta(values: CompraDiretaFormValues) {
+  const valorRealTotal = calculateEstimatedTotal({
+    valorEstimadoUnitario: values.valorRealUnitario,
+    quantidade: values.quantidade,
+  });
+
+  const result = await fetch("/_api/solicitacoes/compra-direta", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: superjson.stringify({
+      titulo: values.titulo,
+      setor_id: values.setorId,
+      categoria_id: values.categoriaId,
+      empresa: values.empresa,
+      quantidade: values.quantidade,
+      valor_unitario_estimado: values.valorUnitarioEstimado,
+      valor_real_unitario: values.valorRealUnitario,
+      valor_real_total: valorRealTotal,
+      canal_compra: values.canalCompra,
+      metodo_pagamento: values.metodoPagamento,
+      parcelas: values.parcelas,
+      descricao: values.descricao,
+      prioridade: values.prioridade,
+    }),
+  });
+
+  if (!result.ok) {
+    throw new Error("Erro ao registrar compra direta.");
+  }
+
+  return superjson.parse<{ success: true; solicitacaoId: number }>(
+    await result.text()
+  );
+}
+
 export default function Solicitacoes() {
   const navigate = useNavigate();
   const { authState } = useAuth();
@@ -139,11 +212,16 @@ export default function Solicitacoes() {
   const isFinanceiroView = user ? hasAccessGroup(user.role, "financeiro") : false;
   const canViewSolicitacoesList = isTecnologiaView || isFinanceiroView;
   const canCreateSolicitacao = user?.role !== "financeiro";
+  const canCreateCompraDireta = user?.role === "admin";
 
   const [statusFilter, setStatusFilter] = useState<string>("_empty");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [compraDiretaOpen, setCompraDiretaOpen] = useState(false);
+  const [compraDiretaSubmitting, setCompraDiretaSubmitting] = useState(false);
+  const [compraDiretaForm, setCompraDiretaForm] =
+    useState<CompraDiretaFormValues>(EMPTY_COMPRA_DIRETA_FORM_VALUES);
 
   const filters = useMemo(
     () => ({
@@ -152,7 +230,11 @@ export default function Solicitacoes() {
     [statusFilter]
   );
 
-  const { data: solicitacoes, isLoading } = useQuerySolicitacoesLiveWhen(
+  const {
+    data: solicitacoes,
+    isLoading,
+    refetch: refetchSolicitacoes,
+  } = useQuerySolicitacoesLiveWhen(
     filters,
     canViewSolicitacoesList
   );
@@ -214,11 +296,23 @@ export default function Solicitacoes() {
     form.setValues(EMPTY_FORM_VALUES);
   };
 
+  const resetCompraDiretaForm = () => {
+    setCompraDiretaForm(EMPTY_COMPRA_DIRETA_FORM_VALUES);
+  };
+
   const handleDialogChange = (open: boolean) => {
     setDialogOpen(open);
 
     if (!open) {
       resetForm();
+    }
+  };
+
+  const handleCompraDiretaChange = (open: boolean) => {
+    setCompraDiretaOpen(open);
+
+    if (!open) {
+      resetCompraDiretaForm();
     }
   };
 
@@ -237,6 +331,28 @@ export default function Solicitacoes() {
     });
   };
 
+  const valorRealTotalCompraDireta = calculateEstimatedTotal({
+    valorEstimadoUnitario: compraDiretaForm.valorRealUnitario,
+    quantidade: compraDiretaForm.quantidade,
+  });
+
+  const onSubmitCompraDireta = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+      setCompraDiretaSubmitting(true);
+      await postCompraDireta(compraDiretaForm);
+      toastSuccess("Compra registrada com sucesso.");
+      setCompraDiretaOpen(false);
+      resetCompraDiretaForm();
+      await refetchSolicitacoes();
+    } catch {
+      toastError("Erro ao registrar compra direta.");
+    } finally {
+      setCompraDiretaSubmitting(false);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <Helmet>
@@ -246,6 +362,7 @@ export default function Solicitacoes() {
       <div className={styles.header}>
         <h1 className={styles.title}>Solicitações</h1>
 
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         <Dialog open={dialogOpen} onOpenChange={handleDialogChange}>
           {canCreateSolicitacao ? (
             <DialogTrigger asChild>
@@ -527,7 +644,346 @@ export default function Solicitacoes() {
             </Form>
           </DialogContent>
         </Dialog>
+
+        {canCreateCompraDireta ? (
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => setCompraDiretaOpen(true)}
+          >
+            <Zap size={16} />
+            Compra direta
+          </Button>
+        ) : null}
+        </div>
       </div>
+
+      <Dialog open={compraDiretaOpen} onOpenChange={handleCompraDiretaChange}>
+        <DialogContent className={styles.dialogContent}>
+          <DialogHeader>
+            <DialogTitle>Compra direta</DialogTitle>
+            <p className={styles.dialogSubtitle}>
+              Registre uma compra administrativa ja concluida, sem passar pelo fluxo de aprovacao.
+            </p>
+          </DialogHeader>
+
+          <form onSubmit={onSubmitCompraDireta} className={styles.formLayout}>
+            <div className={styles.formScrollArea}>
+              <section className={styles.formSection}>
+                <div className={styles.sectionHeader}>
+                  <h3>Identificacao</h3>
+                </div>
+
+                <div className={styles.formGridTwo}>
+                  <div className={styles.spanTwo}>
+                    <label>Item comprado</label>
+                    <Input
+                      required
+                      minLength={3}
+                      value={compraDiretaForm.titulo}
+                      onChange={(e) =>
+                        setCompraDiretaForm((prev) => ({
+                          ...prev,
+                          titulo: e.target.value,
+                        }))
+                      }
+                      placeholder="Ex: Fonte para servidor"
+                    />
+                  </div>
+
+                  <div>
+                    <label>Setor</label>
+                    <Select
+                      value={
+                        compraDiretaForm.setorId > 0
+                          ? String(compraDiretaForm.setorId)
+                          : "_empty"
+                      }
+                      onValueChange={(value) =>
+                        setCompraDiretaForm((prev) => ({
+                          ...prev,
+                          setorId: value === "_empty" ? 0 : Number(value),
+                        }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione um setor" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="_empty">Selecione...</SelectItem>
+                        {setoresOptions.map((setor) => (
+                          <SelectItem key={setor.id} value={String(setor.id)}>
+                            {setor.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label>Categoria</label>
+                    <Select
+                      value={
+                        compraDiretaForm.categoriaId > 0
+                          ? String(compraDiretaForm.categoriaId)
+                          : "_empty"
+                      }
+                      onValueChange={(value) =>
+                        setCompraDiretaForm((prev) => ({
+                          ...prev,
+                          categoriaId: value === "_empty" ? 0 : Number(value),
+                        }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione uma categoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="_empty">Selecione...</SelectItem>
+                        {categoriasOptions.map((categoria) => (
+                          <SelectItem key={categoria.id} value={String(categoria.id)}>
+                            {categoria.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className={styles.spanTwo}>
+                    <label>Empresa</label>
+                    <div className={styles.empresaChooser} role="radiogroup" aria-label="Empresa">
+                      {EMPRESA_OPTIONS.map((empresa) => {
+                        const isActive = compraDiretaForm.empresa === empresa.value;
+
+                        return (
+                          <button
+                            key={empresa.value}
+                            type="button"
+                            role="radio"
+                            aria-checked={isActive}
+                            className={`${styles.empresaOption} ${
+                              isActive ? styles.empresaOptionActive : ""
+                            }`}
+                            onClick={() =>
+                              setCompraDiretaForm((prev) => ({
+                                ...prev,
+                                empresa: empresa.value,
+                              }))
+                            }
+                          >
+                            <span className={styles.empresaOptionLabel}>{empresa.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section className={styles.formSection}>
+                <div className={styles.sectionHeader}>
+                  <h3>Valores</h3>
+                </div>
+
+                <div className={styles.formGridThree}>
+                  <div>
+                    <label>Quantidade</label>
+                    <Input
+                      required
+                      type="number"
+                      min="1"
+                      value={compraDiretaForm.quantidade || ""}
+                      onChange={(e) =>
+                        setCompraDiretaForm((prev) => ({
+                          ...prev,
+                          quantidade: Number.parseInt(e.target.value, 10) || 0,
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label>Valor estimado unitario (R$)</label>
+                    <Input
+                      required
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      value={compraDiretaForm.valorUnitarioEstimado || ""}
+                      onChange={(e) =>
+                        setCompraDiretaForm((prev) => ({
+                          ...prev,
+                          valorUnitarioEstimado: Number.parseFloat(e.target.value) || 0,
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label>Valor real unitario (R$)</label>
+                    <Input
+                      required
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      value={compraDiretaForm.valorRealUnitario || ""}
+                      onChange={(e) =>
+                        setCompraDiretaForm((prev) => ({
+                          ...prev,
+                          valorRealUnitario: Number.parseFloat(e.target.value) || 0,
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div style={{ marginTop: 12 }}>
+                  <strong>Valor real total:</strong>{" "}
+                  {formatCurrency(valorRealTotalCompraDireta)}
+                </div>
+              </section>
+
+              <section className={styles.formSection}>
+                <div className={styles.sectionHeader}>
+                  <h3>Compra</h3>
+                </div>
+
+                <div className={styles.formGridThree}>
+                  <div>
+                    <label>Canal de compra</label>
+                    <Select
+                      value={compraDiretaForm.canalCompra || "_empty"}
+                      onValueChange={(value) =>
+                        setCompraDiretaForm((prev) => ({
+                          ...prev,
+                          canalCompra: value === "_empty" ? "" : value,
+                        }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o canal" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="_empty">Selecione...</SelectItem>
+                        {CANAL_COMPRA_OPTIONS.filter((option) =>
+                          ["mercado_livre", "amazon", "loja_fisica", "outro"].includes(
+                            option.value
+                          )
+                        ).map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label>Metodo de pagamento</label>
+                    <Select
+                      value={compraDiretaForm.metodoPagamento || "_empty"}
+                      onValueChange={(value) =>
+                        setCompraDiretaForm((prev) => ({
+                          ...prev,
+                          metodoPagamento: value === "_empty" ? "" : value,
+                          parcelas:
+                            value === "cartao_acseg" ||
+                            value === "cartao_acontrans" ||
+                            value === "cartao_sp"
+                              ? prev.parcelas || 1
+                              : 1,
+                        }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o metodo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="_empty">Selecione...</SelectItem>
+                        {METODO_PAGAMENTO_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label>Parcelas</label>
+                    <Input
+                      required
+                      type="number"
+                      min="1"
+                      max="12"
+                      value={compraDiretaForm.parcelas || ""}
+                      onChange={(e) =>
+                        setCompraDiretaForm((prev) => ({
+                          ...prev,
+                          parcelas: Number.parseInt(e.target.value, 10) || 1,
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label>Prioridade</label>
+                    <Select
+                      value={compraDiretaForm.prioridade}
+                      onValueChange={(value) =>
+                        setCompraDiretaForm((prev) => ({
+                          ...prev,
+                          prioridade: value as CompraDiretaFormValues["prioridade"],
+                        }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a prioridade" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PRIORIDADE_OPTIONS.map((prioridade) => (
+                          <SelectItem key={prioridade} value={prioridade}>
+                            {formatPrioridade(prioridade)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className={styles.spanTwo}>
+                    <label>Descricao</label>
+                    <Textarea
+                      required
+                      value={compraDiretaForm.descricao}
+                      onChange={(e) =>
+                        setCompraDiretaForm((prev) => ({
+                          ...prev,
+                          descricao: e.target.value,
+                        }))
+                      }
+                      placeholder="Contexto da compra direta, fornecedor, urgencia ou observacoes operacionais..."
+                    />
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <div className={styles.formFooter}>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => handleCompraDiretaChange(false)}
+                disabled={compraDiretaSubmitting}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={compraDiretaSubmitting}>
+                {compraDiretaSubmitting ? "Registrando..." : "Registrar compra"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {!canViewSolicitacoesList ? (
         <div className={styles.emptyCell} style={{ marginTop: 12 }}>

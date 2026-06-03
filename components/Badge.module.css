@@ -4,9 +4,9 @@
     align-items: center;
     justify-content: center;
     min-height: 1.625rem;
-    border-radius: var(--radius-full);
-    padding: 0.2rem 0.65rem;
-    font-size: 0.75rem;
+    border-radius: 9999px;
+    padding: 3px 10px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.02em;
     line-height: 1.25;
@@ -148,6 +148,9 @@
     --status-bg: #332400;
     --status-fg: #ffb347;
     --status-border: #8a5a00;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .statusPendingBoard {
@@ -254,5 +257,23 @@
     --priority-bg: #0f2a1a;
     --priority-fg: #6ade8a;
     --priority-border: #1a5a2a;
+  }
+
+  .statusPendingFinance::before,
+  .statusReturnedAdjust::before,
+  .priorityEmergencial::before,
+  .priorityUrgente::before {
+    animation: statusDotPulse 2.2s infinite ease-in-out;
+  }
+
+  @keyframes statusDotPulse {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 36%, transparent);
+    }
+    50% {
+      transform: scale(1.25);
+      box-shadow: 0 0 6px currentColor;
+    }
   }
 }

@@ -23,13 +23,15 @@
   }
 
   .button:hover:not(.disabled) {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    filter: brightness(1.08);
   }
 
   .button:active:not(.disabled) {
     transform: translateY(0);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-md);
+    filter: brightness(0.96);
   }
 
   /* Focus styles - high contrast for accessibility */
