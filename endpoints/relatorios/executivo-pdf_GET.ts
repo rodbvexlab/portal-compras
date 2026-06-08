@@ -505,19 +505,18 @@ export async function handle(request: Request) {
       baseCompletedQuery
         .innerJoin("setores", "solicitacoes.setorId", "setores.id")
         .innerJoin("users", "solicitacoes.solicitanteId", "users.id")
-        .leftJoin("users as aprovador", "solicitacoes.financeiroAprovadoPor", "aprovador.id")
         .select([
           "solicitacoes.id as solicitacaoId",
           "solicitacoes.dataCompra",
           "solicitacoes.empresa",
           "solicitacoes.titulo",
+          "solicitacoes.financeiroAprovadoPor",
           "solicitacoes.quantidade as quantidade",
           "solicitacoes.valorEstimado as valorEstimadoUnitario",
           "solicitacoes.valorRealCompraUnitario as valorRealUnitario",
           "solicitacoes.parcelas as parcelas",
           "setores.nome as setorNome",
           "users.displayName as solicitanteNome",
-          "aprovador.displayName as aprovadorNome",
           realTotalHybridSql("solicitacoes").as("valorRealTotal"),
           "solicitacoes.metodoPagamento",
           "solicitacoes.canalCompra",
@@ -585,6 +584,23 @@ export async function handle(request: Request) {
       }))
       .sort((a, b) => b.total - a.total);
 
+    const aprovadorIds = Array.from(
+      new Set(
+        detalhamentoRows
+          .map((row) => row.financeiroAprovadoPor)
+          .filter((id): id is number => id !== null && id !== undefined)
+      )
+    );
+    const aprovadoresMap =
+      aprovadorIds.length > 0
+        ? await db
+            .selectFrom("users")
+            .select(["id", "displayName"])
+            .where("id", "in", aprovadorIds)
+            .execute()
+            .then((rows) => new Map(rows.map((row) => [row.id, row.displayName])))
+        : new Map<number, string>();
+
     const detalhamento: DetailRow[] = detalhamentoRows.map((row) => ({
       solicitacaoId: Number(row.solicitacaoId),
       dataCompra: row.dataCompra,
@@ -600,7 +616,7 @@ export async function handle(request: Request) {
       valorRealTotal: Number(row.valorRealTotal ?? 0),
       parcelas: row.parcelas === null || row.parcelas === undefined ? null : Number(row.parcelas),
       solicitanteNome: row.solicitanteNome,
-      aprovadorNome: row.aprovadorNome ?? null,
+      aprovadorNome: aprovadoresMap.get(row.financeiroAprovadoPor ?? -1) ?? null,
       metodoPagamento: row.metodoPagamento,
       canalCompra: row.canalCompra,
       status: row.status,
