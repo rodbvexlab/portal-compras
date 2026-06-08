@@ -53,11 +53,18 @@ type AnalyticsRow = {
 };
 
 type DetailRow = {
+  solicitacaoId: number;
   dataCompra: Date | string | null;
   empresa: Empresa;
   titulo: string;
   setorNome: string;
+  quantidade: number;
+  valorEstimadoUnitario: number;
+  valorRealUnitario: number | null;
   valorRealTotal: number;
+  parcelas: number | null;
+  solicitanteNome: string;
+  aprovadorNome: string | null;
   metodoPagamento: string | null;
   canalCompra: string | null;
   status: string;
@@ -315,14 +322,19 @@ function getEstimateVsActualInsight(totalEstimado: number, totalRealizado: numbe
 
 function getDetailColumns(): DetailColumn[] {
   return [
-    { label: "Data", width: 54, key: "data" },
-    { label: "Empresa", width: 76, key: "empresa" },
-    { label: "Item", width: 194, key: "item" },
-    { label: "Setor", width: 76, key: "setor" },
-    { label: "Valor Real", width: 84, key: "valor" },
-    { label: "Método", width: 126, key: "metodo" },
-    { label: "Canal", width: 98, key: "canal" },
-    { label: "Status", width: 60, key: "status" },
+    { label: "#", width: 22, key: "num" },
+    { label: "Pedido", width: 44, key: "pedido" },
+    { label: "Data", width: 50, key: "data" },
+    { label: "Empresa", width: 68, key: "empresa" },
+    { label: "Item", width: 148, key: "item" },
+    { label: "Setor", width: 68, key: "setor" },
+    { label: "Solicit.", width: 68, key: "solicitante" },
+    { label: "Qtd", width: 28, key: "qtd" },
+    { label: "V.Unit.", width: 58, key: "vunit" },
+    { label: "V.Real", width: 62, key: "vreal" },
+    { label: "Parcelas", width: 42, key: "parcelas" },
+    { label: "Método", width: 68, key: "metodo" },
+    { label: "Canal", width: 60, key: "canal" },
   ];
 }
 
@@ -492,11 +504,20 @@ export async function handle(request: Request) {
         .execute(),
       baseCompletedQuery
         .innerJoin("setores", "solicitacoes.setorId", "setores.id")
+        .innerJoin("users", "solicitacoes.solicitanteId", "users.id")
+        .leftJoin("users as aprovador", "solicitacoes.financeiroAprovadoPor", "aprovador.id")
         .select([
+          "solicitacoes.id as solicitacaoId",
           "solicitacoes.dataCompra",
           "solicitacoes.empresa",
           "solicitacoes.titulo",
+          "solicitacoes.quantidade as quantidade",
+          "solicitacoes.valorEstimado as valorEstimadoUnitario",
+          "solicitacoes.valorRealCompraUnitario as valorRealUnitario",
+          "solicitacoes.parcelas as parcelas",
           "setores.nome as setorNome",
+          "users.displayName as solicitanteNome",
+          "aprovador.displayName as aprovadorNome",
           realTotalHybridSql("solicitacoes").as("valorRealTotal"),
           "solicitacoes.metodoPagamento",
           "solicitacoes.canalCompra",
@@ -565,15 +586,29 @@ export async function handle(request: Request) {
       .sort((a, b) => b.total - a.total);
 
     const detalhamento: DetailRow[] = detalhamentoRows.map((row) => ({
+      solicitacaoId: Number(row.solicitacaoId),
       dataCompra: row.dataCompra,
       empresa: row.empresa,
       titulo: row.titulo,
       setorNome: row.setorNome,
+      quantidade: Number(row.quantidade ?? 0),
+      valorEstimadoUnitario: Number(row.valorEstimadoUnitario ?? 0),
+      valorRealUnitario:
+        row.valorRealUnitario === null || row.valorRealUnitario === undefined
+          ? null
+          : Number(row.valorRealUnitario),
       valorRealTotal: Number(row.valorRealTotal ?? 0),
+      parcelas: row.parcelas === null || row.parcelas === undefined ? null : Number(row.parcelas),
+      solicitanteNome: row.solicitanteNome,
+      aprovadorNome: row.aprovadorNome ?? null,
       metodoPagamento: row.metodoPagamento,
       canalCompra: row.canalCompra,
       status: row.status,
-    }));
+    })).sort((a, b) => {
+      const empresaCompare = formatEmpresaLabel(a.empresa).localeCompare(formatEmpresaLabel(b.empresa));
+      if (empresaCompare !== 0) return empresaCompare;
+      return new Date(b.dataCompra ?? 0).getTime() - new Date(a.dataCompra ?? 0).getTime();
+    });
 
     const pdfDoc = await PDFDocument.create();
     const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -711,7 +746,7 @@ export async function handle(request: Request) {
         bold: true,
         color: COLORS.accent,
       });
-      drawText("Relatório Executivo de Compras - PDF v2.1", MARGIN_X + 16, cursorY - 46, {
+      drawText("Relatório Executivo de Compras - PDF v3.0", MARGIN_X + 16, cursorY - 46, {
         size: 20,
         bold: true,
         color: COLORS.heading,
@@ -1027,38 +1062,61 @@ export async function handle(request: Request) {
 
     const drawDetailTable = () => {
       const columns = getDetailColumns();
+      const columnWidth = (key: string) =>
+        columns.find((column) => column.key === key)?.width ?? 0;
+      const columnX = (key: string) => {
+        let x = MARGIN_X;
+        for (const column of columns) {
+          if (column.key === key) return x;
+          x += column.width;
+        }
+        return x;
+      };
+      const isCardMethod = (metodoPagamento: string | null) =>
+        metodoPagamento === "cartao" || metodoPagamento?.startsWith("cartao_") === true;
+      const formatParcelas = (row: DetailRow) => {
+        if (!isCardMethod(row.metodoPagamento) || !row.parcelas || row.parcelas <= 1) {
+          return "1x";
+        }
+        return `${row.parcelas}x`;
+      };
 
       const getRowHeight = (row: DetailRow) => {
-        const itemLines = wrapText(fontRegular, fixPresentationText(row.titulo), 8.4, columns[2].width - 8).slice(0, 4);
+        const itemLines = wrapText(
+          fontRegular,
+          fixPresentationText(row.titulo),
+          8.4,
+          columnWidth("item") - 6
+        ).slice(0, 4);
         const empresaLines = wrapText(
           fontRegular,
           fixPresentationText(formatEmpresaLabel(row.empresa)),
           8.2,
-          columns[1].width - 8
+          columnWidth("empresa") - 6
         ).slice(0, 2);
         const setorLines = wrapText(
           fontRegular,
           fixPresentationText(row.setorNome),
           8.2,
-          columns[3].width - 8
+          columnWidth("setor") - 6
+        ).slice(0, 2);
+        const solicitanteLines = wrapText(
+          fontRegular,
+          fixPresentationText(row.solicitanteNome),
+          8.2,
+          columnWidth("solicitante") - 6
         ).slice(0, 2);
         const metodoLines = wrapText(
           fontRegular,
           formatMetodoPagamento(row.metodoPagamento),
           8.2,
-          columns[5].width - 8
+          columnWidth("metodo") - 6
         ).slice(0, 2);
         const canalLines = wrapText(
           fontRegular,
           formatCanalCompra(row.canalCompra),
           8.2,
-          columns[6].width - 8
-        ).slice(0, 2);
-        const statusLines = wrapText(
-          fontRegular,
-          formatStatus(row.status),
-          8.2,
-          columns[7].width - 8
+          columnWidth("canal") - 6
         ).slice(0, 2);
 
         const maxLines = Math.max(
@@ -1066,9 +1124,9 @@ export async function handle(request: Request) {
           itemLines.length,
           empresaLines.length,
           setorLines.length,
+          solicitanteLines.length,
           metodoLines.length,
-          canalLines.length,
-          statusLines.length
+          canalLines.length
         );
 
         return Math.max(20, maxLines * 9 + 9);
@@ -1085,9 +1143,9 @@ export async function handle(request: Request) {
           borderWidth: 0.6,
         });
 
-        let x = MARGIN_X + 8;
+        let x = MARGIN_X;
         for (const col of columns) {
-          drawText(col.label, x, cursorY - 14, {
+          drawText(col.label, x + 3, cursorY - 14, {
             size: 7.9,
             bold: true,
             color: COLORS.accent,
@@ -1104,6 +1162,40 @@ export async function handle(request: Request) {
           color: COLORS.heading,
         });
         cursorY -= 12;
+      };
+
+      const drawSubtotalRow = (label: string, total: number, bold = true) => {
+        const rowHeight = 16;
+
+        if (cursorY - rowHeight < availableBottom) {
+          addPage();
+          drawContinuationLabel();
+          drawHeader();
+        }
+
+        page.drawRectangle({
+          x: MARGIN_X,
+          y: cursorY - rowHeight,
+          width: CONTENT_WIDTH,
+          height: rowHeight,
+          color: COLORS.accentSoft,
+          borderColor: COLORS.line,
+          borderWidth: 0.5,
+        });
+
+        drawText(label, MARGIN_X + 4, cursorY - 11, {
+          size: 8.2,
+          bold,
+          color: COLORS.accent,
+        });
+        drawText(formatCurrency(total), columnX("vreal") + columnWidth("vreal") - 3, cursorY - 11, {
+          size: 8.2,
+          bold,
+          color: COLORS.accent,
+          align: "right",
+        });
+
+        cursorY -= rowHeight + 4;
       };
 
       const firstRowsHeight = detalhamento
@@ -1150,6 +1242,22 @@ export async function handle(request: Request) {
 
       for (let rowIndex = 0; rowIndex < detalhamento.length; rowIndex += 1) {
         const row = detalhamento[rowIndex];
+        const empresaLabel = fixPresentationText(formatEmpresaLabel(row.empresa));
+        const previousRow = detalhamento[rowIndex - 1];
+        const previousEmpresaLabel = previousRow
+          ? fixPresentationText(formatEmpresaLabel(previousRow.empresa))
+          : null;
+
+        if (previousRow && previousEmpresaLabel !== empresaLabel) {
+          const subtotalEmpresa = detalhamento
+            .slice(0, rowIndex)
+            .filter(
+              (item) => fixPresentationText(formatEmpresaLabel(item.empresa)) === previousEmpresaLabel
+            )
+            .reduce((sum, item) => sum + item.valorRealTotal, 0);
+          drawSubtotalRow(`Subtotal ${previousEmpresaLabel}`, subtotalEmpresa);
+        }
+
         const rowHeight = getRowHeight(row);
 
         if (cursorY - rowHeight < availableBottom) {
@@ -1162,37 +1270,37 @@ export async function handle(request: Request) {
           fontRegular,
           fixPresentationText(row.titulo),
           8.4,
-          columns[2].width - 8
+          columnWidth("item") - 6
         ).slice(0, 4);
         const empresaLines = wrapText(
           fontRegular,
-          fixPresentationText(formatEmpresaLabel(row.empresa)),
+          empresaLabel,
           8.2,
-          columns[1].width - 8
+          columnWidth("empresa") - 6
         ).slice(0, 2);
         const setorLines = wrapText(
           fontRegular,
           fixPresentationText(row.setorNome),
           8.2,
-          columns[3].width - 8
+          columnWidth("setor") - 6
+        ).slice(0, 2);
+        const solicitanteLines = wrapText(
+          fontRegular,
+          fixPresentationText(row.solicitanteNome),
+          8.2,
+          columnWidth("solicitante") - 6
         ).slice(0, 2);
         const metodoLines = wrapText(
           fontRegular,
           formatMetodoPagamento(row.metodoPagamento),
           8.2,
-          columns[5].width - 8
+          columnWidth("metodo") - 6
         ).slice(0, 2);
         const canalLines = wrapText(
           fontRegular,
           formatCanalCompra(row.canalCompra),
           8.2,
-          columns[6].width - 8
-        ).slice(0, 2);
-        const statusLines = wrapText(
-          fontRegular,
-          formatStatus(row.status),
-          8.2,
-          columns[7].width - 8
+          columnWidth("canal") - 6
         ).slice(0, 2);
 
         page.drawRectangle({
@@ -1205,48 +1313,88 @@ export async function handle(request: Request) {
           borderWidth: 0.4,
         });
 
-        let x = MARGIN_X + 8;
+        let x = MARGIN_X;
         const topY = cursorY - 11;
 
-        drawText(formatDate(row.dataCompra), x, topY, { size: 8.4 });
+        drawText(formatNumber(rowIndex + 1), x + 3, topY, { size: 8.2 });
         x += columns[0].width;
 
-        for (let i = 0; i < empresaLines.length; i += 1) {
-          drawText(empresaLines[i], x, topY - i * 9, { size: 8.2 });
-        }
+        drawText(`#${row.solicitacaoId}`, x + 3, topY, { size: 8.2 });
         x += columns[1].width;
 
-        for (let i = 0; i < itemLines.length; i += 1) {
-          drawText(itemLines[i], x, topY - i * 9, { size: 8.4 });
-        }
+        drawText(formatDate(row.dataCompra), x + 3, topY, { size: 8.2 });
         x += columns[2].width;
 
-        for (let i = 0; i < setorLines.length; i += 1) {
-          drawText(setorLines[i], x, topY - i * 9, { size: 8.2 });
+        for (let i = 0; i < empresaLines.length; i += 1) {
+          drawText(empresaLines[i], x + 3, topY - i * 9, { size: 8.2 });
         }
         x += columns[3].width;
 
-        drawText(formatCurrency(row.valorRealTotal), x + columns[4].width - 8, topY, {
-          size: 8.4,
-          align: "right",
-        });
+        for (let i = 0; i < itemLines.length; i += 1) {
+          drawText(itemLines[i], x + 3, topY - i * 9, { size: 8.4 });
+        }
         x += columns[4].width;
 
-        for (let i = 0; i < metodoLines.length; i += 1) {
-          drawText(metodoLines[i], x, topY - i * 9, { size: 8.2 });
+        for (let i = 0; i < setorLines.length; i += 1) {
+          drawText(setorLines[i], x + 3, topY - i * 9, { size: 8.2 });
         }
         x += columns[5].width;
 
-        for (let i = 0; i < canalLines.length; i += 1) {
-          drawText(canalLines[i], x, topY - i * 9, { size: 8.2 });
+        for (let i = 0; i < solicitanteLines.length; i += 1) {
+          drawText(solicitanteLines[i], x + 3, topY - i * 9, { size: 8.2 });
         }
         x += columns[6].width;
 
-        for (let i = 0; i < statusLines.length; i += 1) {
-          drawText(statusLines[i], x, topY - i * 9, { size: 8.2 });
+        drawText(formatNumber(Math.trunc(row.quantidade)), x + columns[7].width - 3, topY, {
+          size: 8.2,
+          align: "right",
+        });
+        x += columns[7].width;
+
+        drawText(
+          row.valorRealUnitario === null ? "-" : formatCurrency(row.valorRealUnitario),
+          x + columns[8].width - 3,
+          topY,
+          {
+            size: 8.2,
+            align: "right",
+          }
+        );
+        x += columns[8].width;
+
+        drawText(formatCurrency(row.valorRealTotal), x + columns[9].width - 3, topY, {
+          size: 8.2,
+          align: "right",
+        });
+        x += columns[9].width;
+
+        drawText(formatParcelas(row), x, topY, {
+          size: 8.2,
+          align: "center",
+          maxWidth: columns[10].width,
+        });
+        x += columns[10].width;
+
+        for (let i = 0; i < metodoLines.length; i += 1) {
+          drawText(metodoLines[i], x + 3, topY - i * 9, { size: 8.2 });
+        }
+        x += columns[11].width;
+
+        for (let i = 0; i < canalLines.length; i += 1) {
+          drawText(canalLines[i], x + 3, topY - i * 9, { size: 8.2 });
         }
 
         cursorY -= rowHeight + 4;
+      }
+
+      const lastRow = detalhamento[detalhamento.length - 1];
+      if (lastRow) {
+        const lastEmpresaLabel = fixPresentationText(formatEmpresaLabel(lastRow.empresa));
+        const subtotalEmpresa = detalhamento
+          .filter((item) => fixPresentationText(formatEmpresaLabel(item.empresa)) === lastEmpresaLabel)
+          .reduce((sum, item) => sum + item.valorRealTotal, 0);
+        drawSubtotalRow(`Subtotal ${lastEmpresaLabel}`, subtotalEmpresa);
+        drawSubtotalRow("Total Geral", totalRealizado);
       }
     };
 
