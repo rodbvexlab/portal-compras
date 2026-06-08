@@ -34,6 +34,13 @@ export type SolicitacaoAjusteOperacionalItem = {
   usuarioNome: string;
 };
 
+export type SolicitacaoComentarioItem = {
+  id: number;
+  texto: string;
+  createdAt: string | null;
+  usuarioNome: string;
+};
+
 export type OutputType = {
   id: number;
   titulo: string;
@@ -74,6 +81,7 @@ export type OutputType = {
   aprovacoes: SolicitacaoAprovacaoItem[];
   historico: SolicitacaoHistoricoItem[];
   ajustesOperacionais: SolicitacaoAjusteOperacionalItem[];
+  comentarios: SolicitacaoComentarioItem[];
 };
 
 export const getSolicitacaoDetail = async (

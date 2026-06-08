@@ -73,6 +73,14 @@ export interface Categorias {
   updatedAt: Generated<Timestamp | null>;
 }
 
+export interface ComentariosSolicitacao {
+  id: Generated<number>;
+  solicitacaoId: number;
+  usuarioId: number;
+  texto: string;
+  createdAt: Generated<Timestamp | null>;
+}
+
 export interface HistoricoStatus {
   comentario: string | null;
   createdAt: Generated<Timestamp | null>;
@@ -231,6 +239,7 @@ export interface Users {
 export interface DB {
   aprovacoes: Aprovacoes;
   categorias: Categorias;
+  comentariosSolicitacao: ComentariosSolicitacao;
   historicoStatus: HistoricoStatus;
   loginAttempts: LoginAttempts;
   notificacoesEmail: NotificacoesEmail;

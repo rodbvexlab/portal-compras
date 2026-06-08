@@ -94,7 +94,7 @@ export async function handle(request: Request) {
       );
     }
 
-    const [aprovacoes, historico, ajustesOperacionais, financeiroAprovador] = await Promise.all([
+    const [aprovacoes, historico, ajustesOperacionais, comentariosRows, financeiroAprovador] = await Promise.all([
       db
         .selectFrom("aprovacoes as a")
         .innerJoin("users as u", "a.aprovadorId", "u.id")
@@ -140,6 +140,19 @@ export async function handle(request: Request) {
         .orderBy("ao.createdAt", "desc")
         .execute(),
 
+      db
+        .selectFrom("comentariosSolicitacao")
+        .innerJoin("users", "comentariosSolicitacao.usuarioId", "users.id")
+        .select([
+          "comentariosSolicitacao.id",
+          "comentariosSolicitacao.texto",
+          "comentariosSolicitacao.createdAt",
+          "users.displayName as usuarioNome",
+        ])
+        .where("comentariosSolicitacao.solicitacaoId", "=", input.id)
+        .orderBy("comentariosSolicitacao.createdAt", "asc")
+        .execute(),
+
       solicitacao.financeiroAprovadoPor
         ? db
             .selectFrom("users")
@@ -157,6 +170,11 @@ export async function handle(request: Request) {
       aprovacoes,
       historico,
       ajustesOperacionais,
+      comentarios: comentariosRows.map((comentario) => ({
+        ...comentario,
+        id: Number(comentario.id),
+        createdAt: comentario.createdAt ? new Date(comentario.createdAt).toISOString() : null,
+      })),
     };
 
     return new Response(superjson.stringify(result satisfies OutputType), {

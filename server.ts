@@ -15,6 +15,7 @@ import { handle as handleSolicitacoesStats } from "./endpoints/solicitacoes/stat
 import { handle as handleSolicitacoesDetail } from "./endpoints/solicitacoes/detail_GET";
 import { handle as handleSolicitacoesCreate } from "./endpoints/solicitacoes/create_POST";
 import { handle as handleSolicitacoesCompraDireta } from "./endpoints/solicitacoes/compra-direta_POST";
+import { handle as handleSolicitacoesComentario } from "./endpoints/solicitacoes/comentario_POST";
 import { handle as handleSolicitacoesAdminAdjust } from "./endpoints/solicitacoes/admin-adjust_POST";
 import { handle as handleSolicitacoesUpdate } from "./endpoints/solicitacoes/update_POST";
 import { handle as handleSolicitacoesUpdateStatus } from "./endpoints/solicitacoes/update-status_POST";
@@ -300,6 +301,8 @@ app.get("/_api/auth/oauth_authorize", async (c) => {
 app.post("/_api/solicitacoes/create", async (c) => runEndpoint(c, handleSolicitacoesCreate));
 
 app.post("/_api/solicitacoes/compra-direta", async (c) => runEndpoint(c, handleSolicitacoesCompraDireta));
+
+app.post("/_api/solicitacoes/comentario", async (c) => runEndpoint(c, handleSolicitacoesComentario));
 
 app.post(
   "/_api/solicitacoes/admin-adjust",

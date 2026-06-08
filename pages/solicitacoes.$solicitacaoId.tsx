@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   CheckCircle2,
   ExternalLink,
+  MessageSquare,
   PlayCircle,
   RotateCcw,
   SquarePen,
@@ -69,6 +70,7 @@ import {
   DialogTitle,
 } from "../components/Dialog";
 import { ConfirmDialog } from "../components/ConfirmDialog";
+import { ComentariosSolicitacao } from "../components/ComentariosSolicitacao/ComentariosSolicitacao";
 import { toastError, toastSuccess } from "../helpers/toast";
 
 import styles from "./solicitacoes.$solicitacaoId.module.css";
@@ -1813,15 +1815,24 @@ export default function SolicitacaoDetail() {
                       ) : null}
                       <span className={styles.newStatus}>{formatStatus(h.statusNovo)}</span>
                     </div>
-                    {h.comentario && (
-                      <div className={styles.timelineComment}>{h.comentario}</div>
-                    )}
+                    {h.comentario?.trim() ? (
+                      <div className={styles.timelineCommentHighlight} data-status={h.statusNovo}>
+                        <MessageSquare size={16} aria-hidden="true" />
+                        <span>{h.comentario}</span>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               ))}
             </div>
           )}
         </section>
+
+        <ComentariosSolicitacao
+          solicitacaoId={data.id}
+          status={data.status}
+          comentarios={data.comentarios ?? []}
+        />
       </div>
 
       <Dialog

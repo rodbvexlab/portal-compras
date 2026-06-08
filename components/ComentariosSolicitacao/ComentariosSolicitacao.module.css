@@ -1,0 +1,168 @@
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.cardTitle {
+  font-family: var(--font-family-heading);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0 0 var(--spacing-6) 0;
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.emptyText {
+  color: var(--muted-foreground);
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 17px;
+  top: 2.25rem;
+  bottom: 1rem;
+  width: 0;
+  border-left: 2px solid color-mix(in srgb, var(--primary) 38%, var(--border));
+}
+
+.timelineItem {
+  position: relative;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: var(--spacing-3);
+  padding-bottom: var(--spacing-5);
+}
+
+.timelineItem:last-child {
+  padding-bottom: 0;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: color-mix(in srgb, var(--primary) 18%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--primary) 50%, var(--border));
+  color: var(--primary);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  box-shadow: 0 0 0 4px var(--background);
+  z-index: 1;
+}
+
+.commentContent {
+  min-width: 0;
+  display: grid;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: color-mix(in srgb, var(--muted) 28%, transparent);
+}
+
+.commentHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
+}
+
+.commentAuthor {
+  font-weight: 700;
+  color: var(--foreground);
+  font-size: 0.9375rem;
+}
+
+.commentDate {
+  font-size: 0.8125rem;
+  color: var(--muted-foreground);
+}
+
+.commentText {
+  margin: 0;
+  color: var(--foreground);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.9375rem;
+}
+
+.form {
+  display: grid;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-5);
+  padding-top: var(--spacing-5);
+  border-top: 1px solid var(--border);
+}
+
+.textareaWrap {
+  position: relative;
+}
+
+.formIcon {
+  position: absolute;
+  left: var(--spacing-3);
+  top: var(--spacing-3);
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+
+.textarea {
+  min-height: 7rem;
+  padding-left: 2.5rem;
+}
+
+.formFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
+}
+
+.counter {
+  font-size: 0.8125rem;
+  color: var(--muted-foreground);
+}
+
+.counter[data-over-limit="true"] {
+  color: var(--error);
+}
+
+.spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: var(--spacing-4);
+  }
+
+  .formFooter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

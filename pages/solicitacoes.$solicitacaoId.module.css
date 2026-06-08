@@ -334,6 +334,53 @@
   border-radius: var(--radius-sm);
 }
 
+.timelineCommentHighlight {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-3);
+  padding: var(--spacing-3);
+  border: 1px solid color-mix(in srgb, var(--border) 78%, transparent);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-sm);
+  background-color: color-mix(in srgb, var(--muted) 38%, transparent);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.timelineCommentHighlight svg {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+  color: var(--primary);
+}
+
+.timelineCommentHighlight[data-status="aprovado_para_compra"],
+.timelineCommentHighlight[data-status="comprado"],
+.timelineCommentHighlight[data-status="concluido"] {
+  border-left-color: var(--success);
+}
+
+.timelineCommentHighlight[data-status="aprovado_para_compra"] svg,
+.timelineCommentHighlight[data-status="comprado"] svg,
+.timelineCommentHighlight[data-status="concluido"] svg {
+  color: var(--success);
+}
+
+.timelineCommentHighlight[data-status="rejeitado"],
+.timelineCommentHighlight[data-status="cancelado"],
+.timelineCommentHighlight[data-status="inviavel_operacional"] {
+  border-left-color: var(--error);
+}
+
+.timelineCommentHighlight[data-status="rejeitado"] svg,
+.timelineCommentHighlight[data-status="cancelado"] svg,
+.timelineCommentHighlight[data-status="inviavel_operacional"] svg {
+  color: var(--error);
+}
+
 .emptyText {
   color: var(--muted-foreground);
   font-size: 0.9375rem;
