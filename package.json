@@ -42,6 +42,7 @@
     "date-fns": "^4.1.0",
     "embla-carousel": "^8.5.2",
     "embla-carousel-react": "^8.5.2",
+    "gsap": "^3.15.0",
     "hono": "^4.7.5",
     "jose": "6.2.2",
     "kysely": "0.26.3",

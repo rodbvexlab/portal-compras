@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 
 import { PasswordLoginForm } from '../components/PasswordLoginForm';
 import logoAcontrans from '../assets/branding/grupo-acontrans-logo-transparent.png';
+import DotGrid from '../components/DotGrid/DotGrid';
 
 import styles from './login.module.css';
 
@@ -105,6 +106,21 @@ export default function Login() {
       <Helmet>
         <title>Login - Portal de Compras</title>
       </Helmet>
+
+      <div className={styles.dotGridBackground}>
+        <DotGrid
+          dotSize={4}
+          gap={22}
+          baseColor="#252d3a"
+          activeColor="#c8a256"
+          proximity={110}
+          speedTrigger={80}
+          shockRadius={220}
+          shockStrength={4}
+          resistance={700}
+          returnDuration={1.5}
+        />
+      </div>
 
       <main className={styles.viewport}>
         <div className={styles.stack}>
