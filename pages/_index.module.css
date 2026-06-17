@@ -444,6 +444,14 @@
   width: 100%;
 }
 
+.execChartWrapper {
+  background: #1e2530;
+  border-radius: var(--radius-lg);
+  height: 220px;
+  width: 100%;
+  overflow: hidden;
+}
+
 .tableWrapper {
   background: linear-gradient(
     180deg,

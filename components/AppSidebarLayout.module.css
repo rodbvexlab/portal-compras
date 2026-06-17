@@ -114,7 +114,7 @@
   align-items: center;
   gap: var(--spacing-3);
   padding: 0.7rem var(--spacing-4);
-  color: color-mix(in srgb, var(--sidebar-foreground) 90%, var(--muted-foreground) 10%);
+  color: #8b9299;
   text-decoration: none;
   font-weight: 500;
   transition:
@@ -141,29 +141,23 @@
 }
 
 .navItem:hover {
-  background-color: color-mix(in srgb, var(--primary) 6%, transparent);
-  border-color: color-mix(in srgb, var(--primary) 12%, transparent);
-  color: var(--foreground);
+  background-color: rgba(200, 162, 86, 0.15);
+  border-color: transparent;
+  color: #8b9299;
 }
 
 .navItem.active {
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--primary) 12%, var(--surface) 88%) 0%,
-    color-mix(in srgb, var(--primary) 2%, transparent) 100%
-  );
-  border-color: color-mix(in srgb, var(--primary) 24%, var(--border) 76%);
-  color: color-mix(in srgb, var(--primary) 88%, white 12%);
+  background: rgba(200, 162, 86, 0.10);
+  border-color: transparent;
+  color: #c8a256;
   font-weight: 600;
-  box-shadow: 
-    inset 1px 0 0 color-mix(in srgb, var(--primary) 15%, transparent),
-    inset 0 1px 0 color-mix(in srgb, white 4%, transparent);
+  box-shadow: none;
 }
 
 .navItem.active::before {
-  background: var(--primary);
+  background: #c8a256;
   transform: scaleY(1);
-  box-shadow: 0 0 10px var(--primary);
+  box-shadow: none;
 }
 
 .navLabel {
@@ -171,6 +165,32 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.navSectionLabel {
+  padding: var(--spacing-4) var(--spacing-4) var(--spacing-2);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(200, 162, 86, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.dropdownUserName {
+  display: block;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--popup-foreground);
+}
+
+.dropdownUserRole {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  font-weight: 400;
+  margin-top: 2px;
 }
 
 .sidebarFooter {
@@ -310,7 +330,8 @@
 
 .sidebar.collapsed .sidebarTitle,
 .sidebar.collapsed .navLabel,
-.sidebar.collapsed .userInfo {
+.sidebar.collapsed .userInfo,
+.sidebar.collapsed .navSectionLabel {
   display: none;
 }
 
@@ -360,7 +381,8 @@
     justify-content: flex-start;
   }
   .sidebar.collapsed .sidebarTitle,
-  .sidebar.collapsed .navLabel {
+  .sidebar.collapsed .navLabel,
+  .sidebar.collapsed .navSectionLabel {
     display: block;
   }
   .sidebar.collapsed .userInfo {

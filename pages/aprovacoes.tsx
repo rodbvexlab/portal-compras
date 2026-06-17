@@ -67,6 +67,26 @@ const PARCELAS_OPTIONS = Array.from({ length: 12 }).map((_, index) => ({
 
 const APPROVAL_FLOW_BY_ROLE: Partial<Record<string, ApprovalFlow>> = APPROVAL_FLOW_BY_ROLE_SHARED;
 
+const PRIORITY_BADGE_INLINE: Record<string, React.CSSProperties> = {
+  baixa:       { background: '#1a1f2e', color: '#93c5fd', border: '1px solid #1d4ed8' },
+  media:       { background: '#1a2e1a', color: '#4ade80', border: '1px solid #166534' },
+  alta:        { background: '#3d2000', color: '#fb923c', border: '1px solid #7c3500' },
+  urgente:     { background: '#3d0000', color: '#f87171', border: '1px solid #7c0000' },
+  emergencial: { background: '#3d0000', color: '#f87171', border: '1px solid #7c0000' },
+};
+
+const STATUS_BADGE_INLINE: Record<string, React.CSSProperties> = {
+  pendente_financeiro:  { background: '#1e2433', color: '#93c5fd', border: '1px solid #1d4ed8' },
+  pendente_diretoria:   { background: '#1e2433', color: '#93c5fd', border: '1px solid #1d4ed8' },
+  aprovado_para_compra: { background: '#1a2e1a', color: '#4ade80', border: '1px solid #166534' },
+  em_compra:            { background: '#1a2e1a', color: '#4ade80', border: '1px solid #166534' },
+  comprado:             { background: '#1a2e1a', color: '#4ade80', border: '1px solid #166534' },
+  concluido:            { background: '#1a2e1a', color: '#4ade80', border: '1px solid #166534' },
+  rejeitado:            { background: '#3d0000', color: '#f87171', border: '1px solid #7c0000' },
+  cancelado:            { background: '#3d0000', color: '#f87171', border: '1px solid #7c0000' },
+  inviavel_operacional: { background: '#3d0000', color: '#f87171', border: '1px solid #7c0000' },
+};
+
 const resolveMotivoCompra = (item: {
   justificativa?: string | null;
   descricao?: string | null;
@@ -323,108 +343,78 @@ export default function Aprovacoes() {
 
               return (
               <article key={item.id} className={styles.approvalCard}>
-                <div className={styles.cardHeader}>
-                  <div className={styles.cardTopline}>
-                    <div className={styles.identityBlock}>
-                      <span className={styles.cardEyebrow}>Pedido #{item.id}</span>
-                      <span className={styles.cardTimestamp}>
-                        {item.createdAt ? formatDate(item.createdAt) : 'Data não informada'}
-                      </span>
-                    </div>
-
-                    <div className={styles.cardSignalStack}>
-                      <Badge variant={getStatusBadgeVariant(item.status)} size="compact">
-                        {formatStatus(item.status)}
-                      </Badge>
-                      <Badge variant={getPrioridadeBadgeVariant(item.prioridade)} size="compact">
-                        {formatPrioridade(item.prioridade)}
-                      </Badge>
-                    </div>
+                {/* Linha 1: ID · Título [Prioridade] [Status] */}
+                <div className={styles.cardHeaderLine}>
+                  <div className={styles.cardTitleGroup}>
+                    <span className={styles.cardId}>#{item.id} ·</span>
+                    <span className={styles.cardTitleText}>{item.titulo}</span>
                   </div>
-
-                  <div className={styles.cardHeadingRow}>
-                    <h3 className={styles.cardTitle}>{item.titulo}</h3>
-                  </div>
-                </div>
-
-                <div className={styles.cardBody}>
-                  <div className={styles.primaryStrip}>
-                    <div className={styles.valueHighlight}>
-                      <span className={styles.valueLabel}>Valor estimado total</span>
-                      <strong className={styles.valueAmount}>
-                        {formatCurrency(valorEstimadoTotal)}
-                      </strong>
-                    </div>
-
-                    <div className={styles.metaGrid}>
-                      <div className={styles.infoRow}>
-                        <span className={styles.infoLabel}>Valor unitário estimado</span>
-                        <span className={styles.infoValue}>{formatCurrency(item.valorEstimado)}</span>
-                      </div>
-                      <div className={styles.infoRow}>
-                        <span className={styles.infoLabel}>Quantidade</span>
-                        <span className={styles.infoValue}>
-                          {item.quantidade}
-                          {item.unidade ? ` ${item.unidade}` : ''}
-                        </span>
-                      </div>
-                      <div className={`${styles.infoRow} ${styles.metaGridWide}`}>
-                        <span className={styles.infoLabel}>Solicitante</span>
-                        <span className={styles.infoValue}>{item.solicitanteNome}</span>
-                      </div>
-                      <div className={styles.infoRow}>
-                        <span className={styles.infoLabel}>Setor</span>
-                        <span className={styles.infoValue}>{item.setorNome}</span>
-                      </div>
-                      <div className={styles.infoRow}>
-                        <span className={styles.infoLabel}>Empresa</span>
-                        <span className={styles.infoValue}>{formatEmpresa(item.empresa)}</span>
-                      </div>
-                      <div className={`${styles.infoRow} ${styles.metaGridWide}`}>
-                        <span className={styles.infoLabel}>Categoria</span>
-                        <span className={styles.infoValue}>{item.categoriaNome}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.justificationBlock}>
-                    <span className={styles.sectionLabel}>Motivo da compra</span>
-                    <p
-                      className={`${styles.justificationText} ${
-                        motivoCompra ? '' : styles.justificationTextEmpty
-                      }`}
+                  <div className={styles.cardBadges}>
+                    <span
+                      className={styles.chipBadge}
+                      style={PRIORITY_BADGE_INLINE[item.prioridade ?? ''] ?? {}}
                     >
-                      {motivoCompra ?? 'Nenhum motivo informado.'}
-                    </p>
+                      {formatPrioridade(item.prioridade)}
+                    </span>
+                    <span
+                      className={styles.chipBadge}
+                      style={STATUS_BADGE_INLINE[item.status] ?? {}}
+                    >
+                      {formatStatus(item.status)}
+                    </span>
                   </div>
                 </div>
 
-                <div className={styles.cardFooter}>
-                  <Button variant="outline" asChild className={styles.detailButton}>
-                    <Link to={`/solicitacoes/${item.id}`}>
-                      <Eye size={16} />
-                      Ver detalhes
-                    </Link>
-                  </Button>
+                {/* Linha 2: Solicitante · Setor · Empresa · Data */}
+                <div className={styles.cardMetaLine}>
+                  {[
+                    item.solicitanteNome,
+                    item.setorNome,
+                    formatEmpresa(item.empresa),
+                    item.createdAt ? formatDate(item.createdAt) : 'Data não informada',
+                  ].filter(Boolean).join(' · ')}
+                </div>
 
-                  <div className={styles.actionButtons}>
-                    <Button
-                      variant="destructive"
-                      className={styles.secondaryActionButton}
+                {/* Linha 3: Valor total, Qtd, Unitário */}
+                <div className={styles.cardFinancialLine}>
+                  <strong className={styles.cardTotalValue}>{formatCurrency(valorEstimadoTotal)}</strong>
+                  <span className={styles.cardFinancialSecondary}>
+                    Qtd: {item.quantidade ?? 1}{item.unidade ? ` ${item.unidade}` : ''}
+                  </span>
+                  <span className={styles.cardFinancialSecondary}>
+                    {formatCurrency(item.valorEstimado)} unit.
+                  </span>
+                </div>
+
+                {/* Linha 4: Motivo */}
+                {motivoCompra && (
+                  <div className={styles.cardMotivoLine}>
+                    <span className={styles.cardMotivoLabel}>Motivo</span>
+                    <p className={styles.cardMotivoText}>{motivoCompra}</p>
+                  </div>
+                )}
+
+                {/* Footer */}
+                <div className={styles.cardFooter}>
+                  <Link to={`/solicitacoes/${item.id}`} className={styles.cardDetailBtn}>
+                    <Eye size={14} />
+                    Ver detalhes
+                  </Link>
+                  <div className={styles.cardActionGroup}>
+                    <button
+                      type="button"
+                      className={styles.cardRejectBtn}
                       onClick={() => setSelectedAction({ id: item.id, type: 'reject' })}
                     >
-                      <CircleX size={16} />
                       Reprovar
-                    </Button>
-
-                    <Button
-                      variant="primary"
-                      className={styles.primaryActionButton}
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.cardApproveBtn}
                       onClick={() => setSelectedAction({ id: item.id, type: 'approve' })}
                     >
-                      <CheckCircle2 size={16} />
                       Aprovar agora
-                    </Button>
+                    </button>
                   </div>
                 </div>
               </article>

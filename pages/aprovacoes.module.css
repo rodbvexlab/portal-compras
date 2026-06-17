@@ -32,37 +32,39 @@
 .operationalStrip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--spacing-3);
-  padding: var(--spacing-3) var(--spacing-4);
-  border: 1px solid color-mix(in srgb, var(--border) 86%, var(--primary) 14%);
-  border-radius: var(--radius-lg);
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--surface) 95%, black 5%) 0%,
-    color-mix(in srgb, var(--surface) 89%, black 11%) 100%
-  );
+  background: #1a1f26;
+  border: 1px solid #2a3040;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .stripItem {
   display: flex;
   flex-direction: column;
-  gap: 0.36rem;
+  gap: 4px;
+  padding: 12px 20px;
+  border-right: 1px solid #2a3040;
   min-width: 0;
 }
 
+.stripItem:last-child {
+  border-right: none;
+}
+
 .stripLabel {
-  color: color-mix(in srgb, var(--muted-foreground) 90%, white 10%);
-  font-size: 0.69rem;
-  letter-spacing: 0.07em;
+  color: #8b9299;
+  font-size: 11px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .stripValue {
-  font-family: var(--font-family-heading);
-  font-size: 1.45rem;
+  font-size: 28px;
+  font-weight: 700;
   line-height: 1;
-  color: var(--foreground);
+  color: #c8a256;
+  font-variant-numeric: tabular-nums;
 }
 
 .spinning {
@@ -306,24 +308,19 @@
 .approvalCard {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
-  border: 1px solid color-mix(in srgb, var(--border) 72%, var(--primary) 28%);
-  border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--surface) 94%, black 6%);
-  box-shadow:
-    var(--shadow-md),
-    inset 0 1px 0 rgb(255 255 255 / 0.035);
-  overflow: hidden;
+  gap: 6px;
+  background: #1a1f26;
+  border: 1px solid #2a3040;
+  border-radius: 10px;
+  padding: 16px 20px;
   transition:
     border-color var(--animation-duration-fast) ease,
-    transform var(--animation-duration-fast) ease,
     box-shadow var(--animation-duration-fast) ease;
 }
 
 .approvalCard:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--border) 40%, var(--primary) 60%);
-  box-shadow: var(--shadow-lg);
+  border-color: #3a4555;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
 .cardHeader {
@@ -507,9 +504,9 @@
   justify-content: space-between;
   gap: var(--spacing-3);
   flex-wrap: wrap;
-  padding: var(--spacing-4) var(--spacing-6) var(--spacing-5);
-  border-top: 1px solid color-mix(in srgb, var(--border) 86%, white 14%);
-  background: color-mix(in srgb, var(--surface) 90%, black 10%);
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #2a3040;
 }
 
 .compactApprovalCard {
@@ -661,9 +658,173 @@
 }
 
 .skeletonCard {
-  height: 26rem;
+  height: 14rem;
   width: 100%;
-  border-radius: var(--radius-lg);
+  border-radius: 10px;
+}
+
+/* ── Compact card ─────────────────────────────── */
+
+.cardHeaderLine {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cardTitleGroup {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.cardId {
+  color: #8b9299;
+  font-size: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cardTitleText {
+  color: #f0f0f0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.cardBadges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.chipBadge {
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.cardMetaLine {
+  color: #8b9299;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardFinancialLine {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cardTotalValue {
+  color: #c8a256;
+  font-size: 20px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.cardFinancialSecondary {
+  color: #8b9299;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cardMotivoLine {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cardMotivoLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8b9299;
+}
+
+.cardMotivoText {
+  margin: 0;
+  color: #c8c8c8;
+  font-size: 13px;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardActionGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cardDetailBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid #2a3040;
+  color: #8b9299;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color var(--animation-duration-fast), color var(--animation-duration-fast);
+}
+
+.cardDetailBtn:hover {
+  border-color: #c8a256;
+  color: #c8a256;
+}
+
+.cardRejectBtn {
+  background: #2d1515;
+  color: #f87171;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--animation-duration-fast);
+}
+
+.cardRejectBtn:hover {
+  background: #3d1515;
+}
+
+.cardApproveBtn {
+  background: #c8a256;
+  color: #0f1117;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--animation-duration-fast);
+}
+
+.cardApproveBtn:hover {
+  background: #d4ac60;
 }
 
 .dialogContent {
@@ -772,6 +933,16 @@
 @media (max-width: 820px) {
   .operationalStrip {
     grid-template-columns: 1fr;
+    border-radius: 10px;
+  }
+
+  .stripItem {
+    border-right: none;
+    border-bottom: 1px solid #2a3040;
+  }
+
+  .stripItem:last-child {
+    border-bottom: none;
   }
 
   .cardsGrid {
@@ -802,31 +973,26 @@
   }
 
   .header,
-  .queueSummary,
-  .cardHeader,
-  .cardBody,
-  .cardFooter {
+  .queueSummary {
     padding-left: var(--spacing-4);
     padding-right: var(--spacing-4);
   }
 
-  .cardTopline,
-  .cardHeadingRow,
   .dialogSummaryHeader {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .metaGrid,
   .dialogSummaryGrid {
     grid-template-columns: 1fr;
   }
 
-  .actionButtons {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 12px;
+  .cardHeaderLine {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .cardActionGroup {
+    flex-wrap: wrap;
   }
 }

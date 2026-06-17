@@ -21,6 +21,8 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from './DropdownMenu';
 import styles from './AppSidebarLayout.module.css';
 
@@ -137,6 +139,7 @@ export const AppSidebarLayout: React.FC<{ children: React.ReactNode }> = ({ chil
         </div>
 
         <nav className={styles.nav}>
+          <div className={styles.navSectionLabel}>Portal de Compras</div>
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.to;
@@ -180,6 +183,11 @@ export const AppSidebarLayout: React.FC<{ children: React.ReactNode }> = ({ chil
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align="end" sideOffset={10}>
+                <DropdownMenuLabel>
+                  <span className={styles.dropdownUserName}>{user.displayName}</span>
+                  <span className={styles.dropdownUserRole}>{roleMap[user.role] || user.role}</span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut size={16} style={{ marginRight: 8 }} />
                   Sair

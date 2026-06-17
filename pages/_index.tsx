@@ -1,4 +1,8 @@
 ﻿import React, { Suspense, lazy, useMemo, useState } from 'react';
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip,
+  ResponsiveContainer, Cell, PieChart, Pie,
+} from 'recharts';
 import { Helmet } from 'react-helmet';
 import { useAuth } from '../helpers/useAuth';
 import type { SolicitacaoStatus } from '../helpers/schema';
@@ -21,6 +25,22 @@ import { toast } from 'sonner';
 import styles from './_index.module.css';
 
 const DashboardStatusChart = lazy(() => import('./_index.StatusChart'));
+
+const PIE_COLORS = ['#c8a256', '#4a5568', '#718096', '#a0aec0', '#cbd5e0'];
+
+const CHART_TOOLTIP_STYLE = {
+  background: '#1e2530',
+  border: '1px solid #2d3748',
+  borderRadius: 6,
+  color: '#e2e8f0',
+  fontSize: 13,
+} as const;
+
+function formatCurrencyShort(value: number): string {
+  if (value >= 1_000_000) return `R$ ${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `R$ ${(value / 1_000).toFixed(0)}k`;
+  return `R$ ${value.toFixed(0)}`;
+}
 
 type ExecutivePeriodPreset = 'current_month' | 'last_30_days' | 'custom';
 type MetodoPagamentoFilterValue = '_all' | (typeof METODO_PAGAMENTO_OPTIONS)[number]['value'];
@@ -169,6 +189,23 @@ export default function Dashboard() {
   const totalAguardandoCompra = byStatus['aprovado_para_compra'] || 0;
   const totalCompradas = byStatus['comprado'] || 0;
   const executive = stats?.executive;
+
+  const setorChartData = useMemo(
+    () => (executive?.gastosPorSetor ?? []).map((item) => ({
+      name: item.setorNome,
+      value: item.totalRealizado,
+    })),
+    [executive?.gastosPorSetor],
+  );
+
+  const metodoPagamentoChartData = useMemo(
+    () => (executive?.gastosPorMetodoPagamento ?? []).map((item, i) => ({
+      name: formatMetodoPagamento(item.metodoPagamento),
+      value: item.totalRealizado,
+      color: PIE_COLORS[i] ?? PIE_COLORS[PIE_COLORS.length - 1],
+    })),
+    [executive?.gastosPorMetodoPagamento],
+  );
 
   const chartData = Object.entries(byStatus)
     .filter(([_, count]) => Number(count) > 0)
@@ -482,6 +519,46 @@ export default function Dashboard() {
             <p className={styles.sectionDescription}>
               Distribuição dos gastos reais por área para apoiar decisões orçamentárias.
             </p>
+            {!isLoading && setorChartData.length > 0 && (
+              <div className={styles.execChartWrapper}>
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart
+                    layout="vertical"
+                    data={setorChartData}
+                    margin={{ top: 4, right: 16, left: 8, bottom: 4 }}
+                  >
+                    <XAxis
+                      type="number"
+                      tickFormatter={formatCurrencyShort}
+                      tick={{ fill: '#8b9299', fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      width={110}
+                      tick={{ fill: '#e2e8f0', fontSize: 12 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <RechartsTooltip
+                      contentStyle={CHART_TOOLTIP_STYLE}
+                      formatter={(value: any) => [formatCurrency(value as number), 'Realizado']}
+                      labelStyle={{ color: '#e2e8f0', fontWeight: 600, marginBottom: 4 }}
+                      itemStyle={{ color: '#c8a256' }}
+                      cursor={{ fill: 'rgba(200,162,86,0.06)' }}
+                    />
+                    <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={26}>
+                      {setorChartData.map((_, i) => (
+                        <Cell key={i} fill="#c8a256" fillOpacity={0.8} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+
             <div className={`${styles.tableWrapper} ${styles.executiveTableWrapper}`}>
               <table className={`${styles.table} ${styles.executiveTable}`}>
                 <thead>
@@ -532,6 +609,43 @@ export default function Dashboard() {
             <p className={styles.sectionDescription}>
               Leitura rápida da concentração financeira por meio de pagamento aprovado.
             </p>
+            {!isLoading && metodoPagamentoChartData.length > 0 && (
+              <div className={styles.execChartWrapper} style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+                <div style={{ flexShrink: 0 }}>
+                  <ResponsiveContainer width={220} height={220}>
+                    <PieChart>
+                      <Pie
+                        data={metodoPagamentoChartData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={55}
+                        outerRadius={88}
+                        paddingAngle={2}
+                        dataKey="value"
+                      >
+                        {metodoPagamentoChartData.map((entry, i) => (
+                          <Cell key={i} fill={entry.color} stroke="none" />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 13, color: '#a0aec0', minWidth: 0 }}>
+                  {metodoPagamentoChartData.map((entry, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ width: 10, height: 10, borderRadius: 2, background: entry.color, flexShrink: 0 }} />
+                      <span style={{ maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {entry.name}
+                      </span>
+                      <span style={{ marginLeft: 'auto', color: '#e2e8f0', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', paddingLeft: 8 }}>
+                        {formatCurrency(entry.value)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className={`${styles.tableWrapper} ${styles.executiveTableWrapper}`}>
               <table className={`${styles.table} ${styles.executiveTable}`}>
                 <thead>
