@@ -426,6 +426,48 @@
   }
 }
 
+.suggestionDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: #1a1f26;
+  border: 1px solid #2a3040;
+  border-radius: 8px;
+  margin-top: 4px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.suggestionItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 14px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.suggestionItem:hover {
+  background: #252d3a;
+}
+
+.suggestionTitle {
+  color: #f0f0f0;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.suggestionMeta {
+  color: #8b9299;
+  font-size: 12px;
+}
+
 @media (max-width: 720px) {
   .dialogContent {
     width: 96vw !important;

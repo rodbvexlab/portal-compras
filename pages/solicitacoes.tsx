@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
 import { Plus, Zap } from "lucide-react";
@@ -215,6 +215,19 @@ export default function Solicitacoes() {
   const canCreateSolicitacao = user?.role !== "financeiro";
   const canCreateCompraDireta = user?.role === "admin";
 
+  const [historicSuggestions, setHistoricSuggestions] = useState<Array<{
+    titulo_original: string;
+    valor_unitario: string;
+    valor_total: string;
+    quantidade: number;
+    fornecedor: string | null;
+    canal: string | null;
+    data_compra: string;
+  }>>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const suggestionsDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const suggestionWrapperRef = useRef<HTMLDivElement>(null);
+
   const [statusFilter, setStatusFilter] = useState<string>("_empty");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -292,6 +305,63 @@ export default function Solicitacoes() {
       setCurrentPage(totalPages);
     }
   }, [currentPage, totalPages]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        suggestionWrapperRef.current &&
+        !suggestionWrapperRef.current.contains(e.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleTituloChange = (value: string) => {
+    form.setValues((prev: FormValues) => ({ ...prev, titulo: value }));
+
+    if (suggestionsDebounceRef.current) {
+      clearTimeout(suggestionsDebounceRef.current);
+    }
+
+    if (value.trim().length < 3) {
+      setHistoricSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    suggestionsDebounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/_api/historico-precos/buscar?q=${encodeURIComponent(value.trim())}`,
+          { credentials: "include" }
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setHistoricSuggestions(data);
+          setShowSuggestions(true);
+        } else {
+          setHistoricSuggestions([]);
+          setShowSuggestions(false);
+        }
+      } catch {
+        // silently ignore fetch errors for suggestions
+      }
+    }, 400);
+  };
+
+  const handleSuggestionSelect = (suggestion: typeof historicSuggestions[number]) => {
+    form.setValues((prev: FormValues) => ({
+      ...prev,
+      titulo: suggestion.titulo_original,
+      valorEstimado: parseFloat(suggestion.valor_unitario) || 0,
+    }));
+    setShowSuggestions(false);
+    setHistoricSuggestions([]);
+  };
 
   const resetForm = () => {
     form.setValues(EMPTY_FORM_VALUES);
@@ -394,16 +464,34 @@ export default function Solicitacoes() {
                       <FormItem name="titulo" className={styles.spanTwo}>
                         <FormLabel>Item solicitado</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Ex: Notebook Dell Inspiron"
-                            value={form.values.titulo}
-                            onChange={(e) =>
-                              form.setValues((prev: FormValues) => ({
-                                ...prev,
-                                titulo: e.target.value,
-                              }))
-                            }
-                          />
+                          <div ref={suggestionWrapperRef} style={{ position: "relative" }}>
+                            <Input
+                              placeholder="Ex: Notebook Dell Inspiron"
+                              value={form.values.titulo}
+                              onChange={(e) => handleTituloChange(e.target.value)}
+                              autoComplete="off"
+                            />
+                            {showSuggestions && historicSuggestions.length > 0 ? (
+                              <div className={styles.suggestionDropdown}>
+                                {historicSuggestions.map((s, i) => (
+                                  <button
+                                    key={i}
+                                    type="button"
+                                    className={styles.suggestionItem}
+                                    onClick={() => handleSuggestionSelect(s)}
+                                  >
+                                    <span className={styles.suggestionTitle}>
+                                      {s.titulo_original}
+                                    </span>
+                                    <span className={styles.suggestionMeta}>
+                                      Última compra: {formatCurrency(parseFloat(s.valor_unitario))} · Qtd: {s.quantidade} · {formatDate(s.data_compra)}
+                                      {(s.canal || s.fornecedor) ? ` · ${s.canal || s.fornecedor}` : ""}
+                                    </span>
+                                  </button>
+                                ))}
+                              </div>
+                            ) : null}
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>

@@ -20,6 +20,7 @@ import { handle as handleSolicitacoesAdminAdjust } from "./endpoints/solicitacoe
 import { handle as handleSolicitacoesUpdate } from "./endpoints/solicitacoes/update_POST";
 import { handle as handleSolicitacoesUpdateStatus } from "./endpoints/solicitacoes/update-status_POST";
 import { handle as handleSolicitacoesDelete } from "./endpoints/solicitacoes/delete_POST";
+import { handle as handleHistoricoPrecosBuscar } from "./endpoints/historico-precos/buscar_GET";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -469,6 +470,8 @@ app.post("/_api/auth/register_with_password", async (c) => {
 });
 
 app.get("/_api/solicitacoes/detail", async (c) => runEndpoint(c, handleSolicitacoesDetail));
+
+app.get("/_api/historico-precos/buscar", async (c) => runEndpoint(c, handleHistoricoPrecosBuscar));
 
 if (existsSync("./static")) {
   app.use("/*", serveStatic({ root: "./static" }));

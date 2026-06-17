@@ -1,5 +1,6 @@
 import { schema, OutputType } from "./update-status_POST.schema";
 import superjson from "superjson";
+import { sql } from "kysely";
 import { db } from "../../helpers/db";
 import { getServerUserSession } from "../../helpers/getServerUserSession";
 import type { MetodoPagamento, SolicitacaoStatus } from "../../helpers/schema";
@@ -719,6 +720,34 @@ export async function handle(request: Request) {
           console.error("Email notification error (update-status):", notificationError);
         });
       });
+    }
+
+    if (finalStatus === "concluido" && solicitacao.valorRealCompraUnitario) {
+      try {
+        const valorUnitario = parseFloat(String(solicitacao.valorRealCompraUnitario));
+        const quantidade = solicitacao.quantidade ?? 1;
+        const valorRealCompraLegado = solicitacao.valorRealCompra
+          ? parseFloat(String(solicitacao.valorRealCompra))
+          : null;
+        const valorTotal =
+          valorRealCompraLegado && valorRealCompraLegado > 0
+            ? valorRealCompraLegado
+            : valorUnitario * quantidade;
+        const tituloNormalizado = solicitacao.titulo.trim().toLowerCase();
+        const dataCompra = solicitacao.dataCompra ?? new Date();
+
+        await sql`
+          INSERT INTO historico_precos
+            (titulo_normalizado, titulo_original, valor_unitario, valor_total,
+             quantidade, fornecedor, canal, data_compra, solicitacao_id)
+          VALUES
+            (${tituloNormalizado}, ${solicitacao.titulo}, ${valorUnitario},
+             ${valorTotal}, ${quantidade}, ${solicitacao.fornecedor ?? null},
+             ${solicitacao.canalCompra ?? null}, ${dataCompra}, ${solicitacao.id})
+        `.execute(db);
+      } catch (historicoError) {
+        console.error("[historico_precos] Erro ao registrar histórico de preço:", historicoError);
+      }
     }
 
     return new Response(
