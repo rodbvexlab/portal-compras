@@ -87,9 +87,10 @@ export const DashboardRoute = MakeProtectedRoute(
   getRolesForAccessGroups("diretoria", "financeiro", "tecnologia")
 );
 
-export const SolicitacoesReadRoute = MakeProtectedRoute(
-  getRolesForAccessGroups("financeiro", "tecnologia")
-);
+export const SolicitacoesReadRoute = MakeProtectedRoute([
+  ...getRolesForAccessGroups("financeiro", "tecnologia"),
+  "diretora_financeiro",
+]);
 
 export const FinanceiroRoute = MakeProtectedRoute(
   getRolesForAccessGroups("financeiro")

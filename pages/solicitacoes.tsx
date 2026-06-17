@@ -210,7 +210,8 @@ export default function Solicitacoes() {
 
   const isTecnologiaView = user ? hasAccessGroup(user.role, "tecnologia") : false;
   const isFinanceiroView = user ? hasAccessGroup(user.role, "financeiro") : false;
-  const canViewSolicitacoesList = isTecnologiaView || isFinanceiroView;
+  const isDiretoraFinanceiro = user?.role === "diretora_financeiro";
+  const canViewSolicitacoesList = isTecnologiaView || isFinanceiroView || isDiretoraFinanceiro;
   const canCreateSolicitacao = user?.role !== "financeiro";
   const canCreateCompraDireta = user?.role === "admin";
 

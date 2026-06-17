@@ -5,24 +5,56 @@
 }
 
 .header {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #2a3040;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.headerBreadcrumb {
   display: flex;
   align-items: center;
-  gap: var(--spacing-4);
+}
+
+.breadcrumbLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #8b9299;
+  font-size: 13px;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.breadcrumbLink:hover {
+  color: #c8a256;
+}
+
+.headerMain {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 .title {
-  font-family: var(--font-family-heading);
-  font-size: 1.75rem;
+  font-size: 22px;
   font-weight: 700;
-  color: var(--foreground);
+  color: #f0f0f0;
   margin: 0;
-  margin-right: var(--spacing-2);
 }
 
-.headerBadge {
-  font-size: 1rem;
-  padding: var(--spacing-1) var(--spacing-4);
+.headerBadges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.headerMeta {
+  font-size: 13px;
+  color: #8b9299;
 }
 
 .contentGrid {
@@ -32,21 +64,19 @@
 }
 
 .card {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-6);
-  box-shadow: var(--shadow-sm);
+  background: #1a1f26;
+  border: 1px solid #2a3040;
+  border-radius: 10px;
+  padding: 20px 24px;
 }
 
 .cardTitle {
-  font-family: var(--font-family-heading);
-  font-size: 1.25rem;
+  font-size: 16px;
   font-weight: 600;
-  color: var(--foreground);
-  margin: 0 0 var(--spacing-6) 0;
-  padding-bottom: var(--spacing-4);
-  border-bottom: 1px solid var(--border);
+  color: #f0f0f0;
+  margin: 0 0 16px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #2a3040;
 }
 
 .infoGrid {
@@ -423,9 +453,98 @@
   border-radius: var(--radius-lg);
 }
 
+/* Detail grid — modernized info blocks */
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.detailBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #1a1f26;
+  border: 1px solid #2a3040;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.detailLabel {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8b9299;
+}
+
+.detailValue {
+  font-size: 14px;
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+/* Admin collapsible section */
+.adminCollapsible {
+  background: #161b22;
+  border: 1px solid #2a3040;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.adminCollapsibleToggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #8b9299;
+  font-size: 14px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.adminCollapsibleToggle:hover {
+  background: rgba(200, 162, 86, 0.06);
+  color: #c8a256;
+}
+
+.adminCollapsibleLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.adminCollapsibleChevron {
+  transition: transform 0.2s;
+}
+
+.adminCollapsibleChevron[data-open="true"] {
+  transform: rotate(180deg);
+}
+
+.adminCollapsibleBody {
+  padding: 0 20px 20px;
+  border-top: 1px solid #2a3040;
+}
+
 @media (max-width: 900px) {
   .formGridTwo,
   .formGridThree {
     grid-template-columns: 1fr;
+  }
+
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 1200px) {
+  .detailGrid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }

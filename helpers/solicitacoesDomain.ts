@@ -495,10 +495,11 @@ export function getListAndDetailVisibilityFilters(
     };
   }
 
-  if (
-    user.role === "diretora_financeiro" ||
-    user.role === "ti"
-  ) {
+  if (user.role === "diretora_financeiro") {
+    return {};
+  }
+
+  if (user.role === "ti") {
     return {
       allowedStatuses: LIST_AND_DETAIL_ALLOWED_STATUSES_BY_ROLE[user.role],
     };

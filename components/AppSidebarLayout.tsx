@@ -40,6 +40,7 @@ const NAV_ITEMS_BY_GROUP: Record<AccessGroup, NavItem[]> = {
   ],
   diretoria: [
     { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/solicitacoes', icon: FileText, label: 'Solicitações' },
     { to: '/aprovacoes', icon: CheckSquare, label: 'Aprovar Compras' },
     { to: '/minhas-solicitacoes', icon: ClipboardList, label: 'Minhas Solicitações' },
   ],

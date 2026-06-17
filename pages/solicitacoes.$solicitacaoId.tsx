@@ -1,13 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
   CheckCircle2,
+  ChevronDown,
   ExternalLink,
   MessageSquare,
   PlayCircle,
   RotateCcw,
+  Settings,
   SquarePen,
   XCircle,
 } from "lucide-react";
@@ -74,6 +76,29 @@ import { ComentariosSolicitacao } from "../components/ComentariosSolicitacao/Com
 import { toastError, toastSuccess } from "../helpers/toast";
 
 import styles from "./solicitacoes.$solicitacaoId.module.css";
+
+const PRIORITY_BADGE_INLINE: Record<string, React.CSSProperties> = {
+  baixa:       { background: '#1a1f2e', color: '#93c5fd', border: '1px solid #1d4ed8' },
+  media:       { background: '#1a2e1a', color: '#4ade80', border: '1px solid #166534' },
+  alta:        { background: '#3d2000', color: '#fb923c', border: '1px solid #7c3500' },
+  urgente:     { background: '#3d0000', color: '#f87171', border: '1px solid #7c0000' },
+  emergencial: { background: '#3d0000', color: '#f87171', border: '1px solid #7c0000' },
+};
+const STATUS_BADGE_INLINE: Record<string, React.CSSProperties> = {
+  pendente_financeiro:  { background: '#1e2433', color: '#93c5fd', border: '1px solid #1d4ed8' },
+  pendente_diretoria:   { background: '#1e2433', color: '#93c5fd', border: '1px solid #1d4ed8' },
+  aprovado_para_compra: { background: '#1a2e1a', color: '#4ade80', border: '1px solid #166534' },
+  em_compra:            { background: '#1a2e1a', color: '#4ade80', border: '1px solid #166534' },
+  comprado:             { background: '#1a2e1a', color: '#4ade80', border: '1px solid #166534' },
+  concluido:            { background: '#1a2e1a', color: '#4ade80', border: '1px solid #166534' },
+  devolvido:            { background: '#2e2200', color: '#fbbf24', border: '1px solid #92400e' },
+  rejeitado:            { background: '#3d0000', color: '#f87171', border: '1px solid #7c0000' },
+  cancelado:            { background: '#3d0000', color: '#f87171', border: '1px solid #7c0000' },
+  inviavel_operacional: { background: '#3d0000', color: '#f87171', border: '1px solid #7c0000' },
+};
+const BADGE_BASE: React.CSSProperties = {
+  borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 500, whiteSpace: 'nowrap', display: 'inline-block',
+};
 
 type OptionItem = {
   id: number;
@@ -197,6 +222,7 @@ export default function SolicitacaoDetail() {
     linkProduto: "",
     justificativa: "",
   });
+  const [isAdminSectionExpanded, setIsAdminSectionExpanded] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteJustificativa, setDeleteJustificativa] = useState("");
@@ -857,16 +883,26 @@ export default function SolicitacaoDetail() {
       </Helmet>
 
       <div className={styles.header}>
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Voltar">
-          <ArrowLeft size={20} />
-        </Button>
-        <h1 className={styles.title}>{data.titulo}</h1>
-        <Badge variant={getStatusBadgeVariant(data.status)} className={styles.headerBadge}>
-          {formatStatus(data.status)}
-        </Badge>
-        <Badge variant={getPrioridadeBadgeVariant(data.prioridade)} className={styles.headerBadge}>
-          {formatPrioridade(data.prioridade)}
-        </Badge>
+        <div className={styles.headerBreadcrumb}>
+          <Link to="/solicitacoes" className={styles.breadcrumbLink}>
+            <ArrowLeft size={14} />
+            Solicitações
+          </Link>
+        </div>
+        <div className={styles.headerMain}>
+          <h1 className={styles.title}>{data.titulo}</h1>
+          <div className={styles.headerBadges}>
+            <span style={{ ...BADGE_BASE, ...(STATUS_BADGE_INLINE[data.status] ?? { background: '#1e2433', color: '#93c5fd', border: '1px solid #1d4ed8' }) }}>
+              {formatStatus(data.status)}
+            </span>
+            <span style={{ ...BADGE_BASE, ...(PRIORITY_BADGE_INLINE[data.prioridade] ?? { background: '#1a1f2e', color: '#93c5fd', border: '1px solid #1d4ed8' }) }}>
+              {formatPrioridade(data.prioridade)}
+            </span>
+          </div>
+        </div>
+        <div className={styles.headerMeta}>
+          #{data.id} · {formatEmpresa(data.empresa)} · {data.setorNome} · {formatDate(data.createdAt)}
+        </div>
       </div>
 
       <div className={styles.contentGrid}>
@@ -1113,54 +1149,73 @@ export default function SolicitacaoDetail() {
         ) : null}
 
         {canAdminOperationalAdjust || canDeleteSolicitacaoAdministrativa ? (
-          <section className={styles.card}>
-            <h2 className={styles.cardTitle}>Ajuste administrativo</h2>
+          <section className={styles.adminCollapsible}>
+            <button
+              type="button"
+              className={styles.adminCollapsibleToggle}
+              onClick={() => setIsAdminSectionExpanded((prev) => !prev)}
+              aria-expanded={isAdminSectionExpanded}
+            >
+              <span className={styles.adminCollapsibleLabel}>
+                <Settings size={14} />
+                Ajuste administrativo
+              </span>
+              <ChevronDown
+                size={16}
+                className={styles.adminCollapsibleChevron}
+                data-open={isAdminSectionExpanded}
+              />
+            </button>
 
-            <p className={styles.emptyText}>
-              Somente administradores podem corrigir dados da solicitação e da compra sem alterar o status atual.
-            </p>
+            {isAdminSectionExpanded ? (
+              <div className={styles.adminCollapsibleBody}>
+                <p className={styles.emptyText}>
+                  Somente administradores podem corrigir dados da solicitação e da compra sem alterar o status atual.
+                </p>
 
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 16 }}>
-              {canAdminOperationalAdjust ? (
-                <Button
-                  type="button"
-                  variant={isEditingAdminOperational ? "ghost" : "outline"}
-                  onClick={handleToggleAdminOperationalEdit}
-                  disabled={isAdminAdjusting || deleteSolicitacaoMutation.isPending}
-                >
-                  <SquarePen size={16} />
-                  {isEditingAdminOperational ? "Cancelar ajuste" : "Editar dados administrativos"}
-                </Button>
-              ) : null}
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 16 }}>
+                  {canAdminOperationalAdjust ? (
+                    <Button
+                      type="button"
+                      variant={isEditingAdminOperational ? "ghost" : "outline"}
+                      onClick={handleToggleAdminOperationalEdit}
+                      disabled={isAdminAdjusting || deleteSolicitacaoMutation.isPending}
+                    >
+                      <SquarePen size={16} />
+                      {isEditingAdminOperational ? "Cancelar ajuste" : "Editar dados administrativos"}
+                    </Button>
+                  ) : null}
 
-              {canAdminOperationalAdjust ? (
-                <Button
-                  type="button"
-                  onClick={handleSaveAdminOperationalAdjustments}
-                  disabled={
-                    !isEditingAdminOperational ||
-                    isAdminAdjusting ||
-                    deleteSolicitacaoMutation.isPending ||
-                    adminAdjustmentSummary.length === 0
-                  }
-                >
-                  <RotateCcw size={16} />
-                  {isAdminAdjusting ? "Aplicando..." : "Aplicar ajuste administrativo"}
-                </Button>
-              ) : null}
+                  {canAdminOperationalAdjust ? (
+                    <Button
+                      type="button"
+                      onClick={handleSaveAdminOperationalAdjustments}
+                      disabled={
+                        !isEditingAdminOperational ||
+                        isAdminAdjusting ||
+                        deleteSolicitacaoMutation.isPending ||
+                        adminAdjustmentSummary.length === 0
+                      }
+                    >
+                      <RotateCcw size={16} />
+                      {isAdminAdjusting ? "Aplicando..." : "Aplicar ajuste administrativo"}
+                    </Button>
+                  ) : null}
 
-              {canDeleteSolicitacaoAdministrativa ? (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => setDeleteDialogOpen(true)}
-                  disabled={isUpdatingStatus || deleteSolicitacaoMutation.isPending}
-                >
-                  <XCircle size={16} />
-                  Excluir solicitacao
-                </Button>
-              ) : null}
-            </div>
+                  {canDeleteSolicitacaoAdministrativa ? (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={() => setDeleteDialogOpen(true)}
+                      disabled={isUpdatingStatus || deleteSolicitacaoMutation.isPending}
+                    >
+                      <XCircle size={16} />
+                      Excluir solicitacao
+                    </Button>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
           </section>
         ) : null}
 
@@ -1527,7 +1582,7 @@ export default function SolicitacaoDetail() {
           </section>
         ) : null}
 
-        {canManagePurchase ? (
+        {canManagePurchase && (canStartPurchase || canMarkAsComprado || !!data.linkProduto) ? (
           <section className={styles.card}>
             <h2 className={styles.cardTitle}>Ações Operacionais do TI</h2>
 
@@ -1559,12 +1614,6 @@ export default function SolicitacaoDetail() {
                   {isUpdatingStatus ? "Processando..." : "Marcar como comprado"}
                 </Button>
               ) : null}
-
-              {!canStartPurchase && !canMarkAsComprado ? (
-                <span className={styles.emptyText}>
-                  Nenhuma ação operacional disponível para o status atual.
-                </span>
-              ) : null}
             </div>
           </section>
         ) : null}
@@ -1572,101 +1621,85 @@ export default function SolicitacaoDetail() {
         <section className={styles.card}>
           <h2 className={styles.cardTitle}>Informações Principais</h2>
 
-          <div className={styles.infoGrid}>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Setor</span>
-              <span className={styles.infoValue}>{data.setorNome}</span>
+          <div className={styles.detailGrid}>
+            <div className={styles.detailBlock}>
+              <span className={styles.detailLabel}>Setor</span>
+              <span className={styles.detailValue}>{data.setorNome}</span>
             </div>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Categoria</span>
-              <span className={styles.infoValue}>{data.categoriaNome}</span>
+            <div className={styles.detailBlock}>
+              <span className={styles.detailLabel}>Categoria</span>
+              <span className={styles.detailValue}>{data.categoriaNome}</span>
             </div>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Solicitante</span>
-              <span className={styles.infoValue}>{data.solicitanteNome}</span>
+            <div className={styles.detailBlock}>
+              <span className={styles.detailLabel}>Solicitante</span>
+              <span className={styles.detailValue}>{data.solicitanteNome}</span>
             </div>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Empresa</span>
-              <span className={styles.infoValue}>{formatEmpresa(data.empresa)}</span>
+            <div className={styles.detailBlock}>
+              <span className={styles.detailLabel}>Empresa</span>
+              <span className={styles.detailValue}>{formatEmpresa(data.empresa)}</span>
             </div>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Email</span>
-              <span className={styles.infoValue}>{data.solicitanteEmail}</span>
+            <div className={styles.detailBlock}>
+              <span className={styles.detailLabel}>Email</span>
+              <span className={styles.detailValue}>{data.solicitanteEmail}</span>
             </div>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Quantidade</span>
-              <span className={styles.infoValue}>
-                {data.quantidade} {data.unidade || ""}
-              </span>
+            <div className={styles.detailBlock}>
+              <span className={styles.detailLabel}>Quantidade</span>
+              <span className={styles.detailValue}>{data.quantidade} {data.unidade || ""}</span>
             </div>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Valor Estimado Unitário</span>
-              <span className={styles.infoValue}>{formatCurrency(data.valorEstimado)}</span>
+            <div className={styles.detailBlock}>
+              <span className={styles.detailLabel}>Valor Est. Unitário</span>
+              <span className={styles.detailValue}>{formatCurrency(data.valorEstimado)}</span>
             </div>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Valor Estimado Total</span>
-              <span className={styles.infoValue}>{formatCurrency(valorEstimadoTotal)}</span>
+            <div className={styles.detailBlock}>
+              <span className={styles.detailLabel}>Valor Est. Total</span>
+              <span className={styles.detailValue}>{formatCurrency(valorEstimadoTotal)}</span>
             </div>
             {hasRealCompra ? (
               <>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>Valor Real Unitário</span>
-                  <span className={styles.infoValue}>
-                    {detailValorRealUnitario !== null
-                      ? formatCurrency(detailValorRealUnitario)
-                      : "-"}
+                <div className={styles.detailBlock}>
+                  <span className={styles.detailLabel}>Valor Real Unitário</span>
+                  <span className={styles.detailValue}>
+                    {detailValorRealUnitario !== null ? formatCurrency(detailValorRealUnitario) : "-"}
                   </span>
                 </div>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>Valor Real Total</span>
-                  <span className={styles.infoValue}>{formatCurrency(valorRealTotal)}</span>
+                <div className={styles.detailBlock}>
+                  <span className={styles.detailLabel}>Valor Real Total</span>
+                  <span className={styles.detailValue}>{formatCurrency(valorRealTotal)}</span>
+                </div>
+                <div className={styles.detailBlock}>
+                  <span className={styles.detailLabel}>Data da Compra</span>
+                  <span className={styles.detailValue}>{formatDate(data.dataCompra)}</span>
+                </div>
+                <div className={styles.detailBlock}>
+                  <span className={styles.detailLabel}>Fornecedor</span>
+                  <span className={styles.detailValue}>{data.fornecedor || "Não informado"}</span>
+                </div>
+                <div className={styles.detailBlock}>
+                  <span className={styles.detailLabel}>Canal / Plataforma</span>
+                  <span className={styles.detailValue}>{formatCanalCompra(data.canalCompra)}</span>
+                </div>
+                <div className={styles.detailBlock}>
+                  <span className={styles.detailLabel}>Observação da Compra</span>
+                  <span className={styles.detailValue}>{data.observacaoCompra?.trim() || "Não informada"}</span>
                 </div>
               </>
             ) : null}
-            {hasRealCompra ? (
-              <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>Data da Compra</span>
-                <span className={styles.infoValue}>{formatDate(data.dataCompra)}</span>
-              </div>
-            ) : null}
-            {hasRealCompra ? (
-              <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>Fornecedor</span>
-                <span className={styles.infoValue}>{data.fornecedor || "Nao informado"}</span>
-              </div>
-            ) : null}
-            {hasRealCompra ? (
-              <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>Canal / Plataforma</span>
-                <span className={styles.infoValue}>{formatCanalCompra(data.canalCompra)}</span>
-              </div>
-            ) : null}
-            {hasRealCompra ? (
-              <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>Observação da Compra</span>
-                <span className={styles.infoValue}>
-                  {data.observacaoCompra?.trim() || "Não informada"}
-                </span>
-              </div>
-            ) : null}
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Prioridade</span>
-              <span className={styles.infoValue}>{formatPrioridade(data.prioridade)}</span>
+            <div className={styles.detailBlock}>
+              <span className={styles.detailLabel}>Prioridade</span>
+              <span className={styles.detailValue}>{formatPrioridade(data.prioridade)}</span>
             </div>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Data de Criação</span>
-              <span className={styles.infoValue}>{formatDate(data.createdAt)}</span>
+            <div className={styles.detailBlock}>
+              <span className={styles.detailLabel}>Data de Criação</span>
+              <span className={styles.detailValue}>{formatDate(data.createdAt)}</span>
             </div>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Link do Produto</span>
-              <span className={styles.infoValue}>
+            <div className={styles.detailBlock}>
+              <span className={styles.detailLabel}>Link do Produto</span>
+              <span className={styles.detailValue}>
                 {data.linkProduto ? (
-                  <a href={data.linkProduto} target="_blank" rel="noreferrer">
+                  <a href={data.linkProduto} target="_blank" rel="noreferrer" style={{ color: '#c8a256' }}>
                     Abrir link
                   </a>
-                ) : (
-                  "Não informado"
-                )}
+                ) : "Não informado"}
               </span>
             </div>
           </div>
@@ -1686,11 +1719,10 @@ export default function SolicitacaoDetail() {
           </div>
         </section>
 
+        {data.ajustesOperacionais.length > 0 ? (
         <section className={styles.card}>
           <h2 className={styles.cardTitle}>Auditoria de ajustes</h2>
-          {data.ajustesOperacionais.length === 0 ? (
-            <p className={styles.emptyText}>Nenhum ajuste registrado.</p>
-          ) : (
+          {(
             <div className={styles.timeline}>
               {data.ajustesOperacionais.map((ajuste) => (
                 <div key={ajuste.id} className={styles.timelineItem} data-type="ajuste">
@@ -1718,38 +1750,37 @@ export default function SolicitacaoDetail() {
             </div>
           )}
         </section>
+        ) : null}
 
         <section className={styles.card}>
           <h2 className={styles.cardTitle}>Financeiro</h2>
 
-          <div className={styles.infoGrid}>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Método de pagamento</span>
-              <span className={styles.infoValue}>
+          <div className={styles.detailGrid}>
+            <div className={styles.detailBlock}>
+              <span className={styles.detailLabel}>Método de pagamento</span>
+              <span className={styles.detailValue}>
                 {formatMetodoPagamento(data.metodoPagamento || data.formaPagamento)}
               </span>
             </div>
 
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Parcelamento</span>
-              <span className={styles.infoValue}>
+            <div className={styles.detailBlock}>
+              <span className={styles.detailLabel}>Parcelamento</span>
+              <span className={styles.detailValue}>
                 {data.parcelas ? `${data.parcelas}x` : "Não informado"}
               </span>
             </div>
 
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Aprovado por</span>
-              <span className={styles.infoValue}>
+            <div className={styles.detailBlock}>
+              <span className={styles.detailLabel}>Aprovado por</span>
+              <span className={styles.detailValue}>
                 {data.financeiroAprovadorNome || "Não informado"}
               </span>
             </div>
 
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Data da aprovação financeira</span>
-              <span className={styles.infoValue}>
-                {data.financeiroAprovadoEm
-                  ? formatDate(data.financeiroAprovadoEm)
-                  : "Não informada"}
+            <div className={styles.detailBlock}>
+              <span className={styles.detailLabel}>Data aprovação financeira</span>
+              <span className={styles.detailValue}>
+                {data.financeiroAprovadoEm ? formatDate(data.financeiroAprovadoEm) : "Não informada"}
               </span>
             </div>
           </div>
@@ -1762,33 +1793,31 @@ export default function SolicitacaoDetail() {
           </div>
         </section>
 
+        {data.aprovacoes.length > 0 ? (
         <section className={styles.card}>
           <h2 className={styles.cardTitle}>Aprovações</h2>
-          {data.aprovacoes.length === 0 ? (
-            <p className={styles.emptyText}>Nenhuma aprovação registrada.</p>
-          ) : (
-            <div className={styles.approvalList}>
-              {data.aprovacoes.map((aprovacao) => (
-                <div key={aprovacao.id} className={styles.approvalItem}>
-                  <div className={styles.approvalHeader}>
-                    <span className={styles.approvalName}>{aprovacao.aprovadorNome}</span>
-                    <Badge variant={getStatusBadgeVariant(aprovacao.status)}>
-                      {formatStatus(aprovacao.status)}
-                    </Badge>
-                  </div>
-                  <div className={styles.approvalMeta}>
-                    <span className={styles.approvalDate}>
-                      {formatDate(aprovacao.createdAt)}
-                    </span>
-                  </div>
-                  {aprovacao.comentario && (
-                    <div className={styles.approvalComment}>{aprovacao.comentario}</div>
-                  )}
+          <div className={styles.approvalList}>
+            {data.aprovacoes.map((aprovacao) => (
+              <div key={aprovacao.id} className={styles.approvalItem}>
+                <div className={styles.approvalHeader}>
+                  <span className={styles.approvalName}>{aprovacao.aprovadorNome}</span>
+                  <Badge variant={getStatusBadgeVariant(aprovacao.status)}>
+                    {formatStatus(aprovacao.status)}
+                  </Badge>
                 </div>
-              ))}
-            </div>
-          )}
+                <div className={styles.approvalMeta}>
+                  <span className={styles.approvalDate}>
+                    {formatDate(aprovacao.createdAt)}
+                  </span>
+                </div>
+                {aprovacao.comentario && (
+                  <div className={styles.approvalComment}>{aprovacao.comentario}</div>
+                )}
+              </div>
+            ))}
+          </div>
         </section>
+        ) : null}
 
         <section className={styles.card}>
           <h2 className={styles.cardTitle}>Histórico de Alterações</h2>
