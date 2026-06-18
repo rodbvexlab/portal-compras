@@ -11,6 +11,7 @@ import PageLayout_5 from "./pages/solicitacoes.$solicitacaoId.pageLayout.tsx";
 import PageLayout_6 from "./pages/compras-ti.pageLayout.tsx";
 import PageLayout_7 from "./pages/trocar-senha.pageLayout.tsx";
 import PageLayout_8 from "./pages/admin.usuarios.pageLayout.tsx";
+import PageLayout_9 from "./pages/orcamento-setor.pageLayout.tsx";
 
 const Page_0 = lazy(() => import("./pages/login.tsx"));
 const Page_1 = lazy(() => import("./pages/_index.tsx"));
@@ -21,6 +22,7 @@ const Page_5 = lazy(() => import("./pages/solicitacoes.$solicitacaoId.tsx"));
 const Page_6 = lazy(() => import("./pages/compras-ti.tsx"));
 const Page_7 = lazy(() => import("./pages/trocar-senha.tsx"));
 const Page_8 = lazy(() => import("./pages/admin.usuarios.tsx"));
+const Page_9 = lazy(() => import("./pages/orcamento-setor.tsx"));
 
 
 if (!window.requestIdleCallback) {
@@ -41,6 +43,7 @@ const fileNameToRoute = new Map([
   ["./pages/compras-ti.tsx", "/compras-ti"],
   ["./pages/trocar-senha.tsx", "/trocar-senha"],
   ["./pages/admin.usuarios.tsx", "/admin/usuarios"],
+  ["./pages/orcamento-setor.tsx", "/orcamento-setor"],
 ]);
 
 const fileNameToComponent = new Map<string, React.ComponentType<any>>([
@@ -53,6 +56,7 @@ const fileNameToComponent = new Map<string, React.ComponentType<any>>([
   ["./pages/compras-ti.tsx", Page_6 as React.ComponentType<any>],
   ["./pages/trocar-senha.tsx", Page_7 as React.ComponentType<any>],
   ["./pages/admin.usuarios.tsx", Page_8 as React.ComponentType<any>],
+  ["./pages/orcamento-setor.tsx", Page_9 as React.ComponentType<any>],
 ]);
 
 function RouteLoadingFallback() {
@@ -209,6 +213,7 @@ export function App() {
               "./pages/compras-ti.tsx": PageLayout_6,
               "./pages/trocar-senha.tsx": PageLayout_7,
               "./pages/admin.usuarios.tsx": PageLayout_8,
+              "./pages/orcamento-setor.tsx": PageLayout_9,
             }),
             fileNameToRoute,
             makePageRoute,

@@ -98,6 +98,8 @@ export const FinanceiroRoute = MakeProtectedRoute(
 
 export const AdminRoute = MakeProtectedRoute(["admin"]);
 
+export const FinanceiroOuAdminRoute = MakeProtectedRoute(["diretora_financeiro", "admin"]);
+
 export const AllAuthenticatedRoute = MakeProtectedRoute([
   ...getRolesForAccessGroups("lider", "diretoria", "financeiro", "tecnologia"),
 ]);

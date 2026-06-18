@@ -604,6 +604,44 @@
   font-size: 0.88rem;
 }
 
+/* ── Orçamento progress bar ── */
+.progressBar {
+  height: 4px;
+  border-radius: 2px;
+  background: #2a3040;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.progressFillGreen { background: #4ade80; }
+.progressFillAmber { background: #fbbf24; }
+.progressFillRed   { background: #f87171; }
+
+.orcamentoPercentGreen { color: #4ade80; font-size: 12px; font-variant-numeric: tabular-nums; }
+.orcamentoPercentAmber { color: #fbbf24; font-size: 12px; font-variant-numeric: tabular-nums; }
+.orcamentoPercentRed   { color: #f87171; font-size: 12px; font-variant-numeric: tabular-nums; }
+.orcamentoNone         { color: #4a5568; font-size: 12px; }
+
+.orcamentoAlertBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
 @media (min-width: 1024px) {
   .contentGrid {
     grid-template-columns: 1fr 1.5fr;

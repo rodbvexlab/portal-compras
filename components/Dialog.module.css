@@ -2,14 +2,16 @@
   .overlay {
     position: fixed;
     inset: 0;
-    background-color: color-mix(in srgb, black 50%, transparent);
+    background: rgba(8, 10, 15, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     z-index: var(--z-overlay) !important;
     animation: overlayShow var(--animation-duration-normal)
       cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .content {
-    /* This must be fixed, no relative or other positining, otherwise it won't show up properly. */
+    /* This must be fixed, no relative or other positioning, otherwise it won't show up properly. */
     position: fixed !important;
     top: 50%;
     left: 50%;
@@ -17,13 +19,19 @@
     max-width: 90vw;
     max-height: 85vh;
     width: 32rem;
-    background-color: var(--popup);
+    background: rgba(18, 22, 30, 0.82);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
     color: var(--popup-foreground);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
+    border-radius: 16px;
+    border: 1px solid rgba(200, 162, 86, 0.12);
+    box-shadow:
+      0 24px 64px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(200, 162, 86, 0.08),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.3);
     z-index: var(--z-overlay) !important;
     overflow: auto;
-    padding: var(--spacing-6);
+    padding: 28px 32px;
     animation: contentShow var(--animation-duration-normal)
       cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -37,26 +45,24 @@
     justify-content: center;
     width: 2rem;
     height: 2rem;
-    border-radius: var(--radius-full);
-    background-color: var(--muted);
-    color: var(--muted-foreground);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #8b9299;
     border: none;
     cursor: pointer;
     transition:
       background-color var(--animation-duration-fast) ease,
-      color var(--animation-duration-fast) ease,
-      transform var(--animation-duration-fast) ease;
+      color var(--animation-duration-fast) ease;
   }
 
   .close:hover {
-    background-color: var(--muted-foreground);
-    color: var(--muted);
-    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.1);
+    color: #f0f0f0;
   }
 
   .close:focus-visible {
     outline: none;
-    box-shadow: var(--shadow-focus);
+    box-shadow: 0 0 0 3px rgba(200, 162, 86, 0.25);
   }
 
   .closeIcon {
@@ -65,30 +71,33 @@
   }
 
   .header {
-    margin-bottom: var(--spacing-4);
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(200, 162, 86, 0.08);
   }
 
   .footer {
     display: flex;
     justify-content: flex-end;
-    gap: var(--spacing-2);
-    margin-top: var(--spacing-6);
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   .title {
-    font-family: var(--font-family-heading);
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--popup-foreground);
-    line-height: 1.4;
-    margin-bottom: var(--spacing-2);
+    font-size: 18px;
+    font-weight: 700;
+    color: #f0f0f0;
+    line-height: 1.3;
+    margin: 0 0 4px;
   }
 
   .description {
-    font-size: 0.875rem;
-    color: var(--muted-foreground);
+    font-size: 13px;
+    color: #8b9299;
     line-height: 1.5;
-    margin-bottom: var(--spacing-4);
+    margin: 4px 0 0;
   }
 
   .screenReaderText {
@@ -115,7 +124,7 @@
   @keyframes contentShow {
     from {
       opacity: 0;
-      scale: 0.95;
+      scale: 0.96;
     }
     to {
       opacity: 1;

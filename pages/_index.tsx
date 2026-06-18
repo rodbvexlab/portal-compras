@@ -1,4 +1,5 @@
-﻿import React, { Suspense, lazy, useMemo, useState } from 'react';
+﻿import React, { Suspense, lazy, useMemo, useState, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip,
   ResponsiveContainer, Cell, PieChart, Pie,
@@ -25,6 +26,14 @@ import { toast } from 'sonner';
 import styles from './_index.module.css';
 
 const DashboardStatusChart = lazy(() => import('./_index.StatusChart'));
+
+type OrcamentoItem = {
+  setor: string;
+  limiteMensal: number | null;
+  gastoReal: number;
+  percentual: number | null;
+  totalCompras: number;
+};
 
 const PIE_COLORS = ['#c8a256', '#4a5568', '#718096', '#a0aec0', '#cbd5e0'];
 
@@ -94,6 +103,20 @@ export default function Dashboard() {
   const [canalCompraFilter, setCanalCompraFilter] = useState<CanalCompraFilterValue>('_all');
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const { data: setores } = useQuerySetores();
+
+  const isDiretoraFinanceiro =
+    user?.role === 'diretora_financeiro' || user?.role === 'admin';
+
+  const { data: orcamentoData } = useQuery({
+    queryKey: ['orcamento-setor'],
+    queryFn: async () => {
+      const res = await fetch('/_api/orcamento-setor/atual');
+      if (!res.ok) return [] as OrcamentoItem[];
+      return res.json() as Promise<OrcamentoItem[]>;
+    },
+    enabled: isDiretoraFinanceiro,
+    staleTime: 2 * 60 * 1000,
+  });
 
   const setorOptions = useMemo(() => {
     const rawItems = Array.isArray(setores)
@@ -513,7 +536,19 @@ export default function Dashboard() {
         <div className={`${styles.contentGrid} ${styles.executiveContentGrid}`}>
           <div className={`${styles.chartSection} ${styles.sectionShell} ${styles.executiveSection}`}>
             <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Gastos por Setor</h2>
+              <h2 className={styles.sectionTitle}>
+                Gastos por Setor
+                {isDiretoraFinanceiro && (() => {
+                  const criticos = (orcamentoData ?? []).filter(
+                    (o) => o.percentual !== null && o.percentual > 90
+                  );
+                  return criticos.length > 0 ? (
+                    <span className={styles.orcamentoAlertBadge}>
+                      ⚠ {criticos.length} setor{criticos.length > 1 ? 'es' : ''} com orçamento crítico
+                    </span>
+                  ) : null;
+                })()}
+              </h2>
               <p className={styles.sectionMeta}>Período: {periodLabel}</p>
             </div>
             <p className={styles.sectionDescription}>
@@ -566,6 +601,7 @@ export default function Dashboard() {
                     <th>Setor</th>
                     <th>Total Realizado</th>
                     <th>Compras</th>
+                    {isDiretoraFinanceiro && <th>Orçamento</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -575,25 +611,60 @@ export default function Dashboard() {
                         <td><Skeleton className={styles.skeletonCell} /></td>
                         <td><Skeleton className={styles.skeletonCell} /></td>
                         <td><Skeleton className={styles.skeletonCell} /></td>
+                        {isDiretoraFinanceiro && <td><Skeleton className={styles.skeletonCell} /></td>}
                       </tr>
                     ))
                   ) : (
-                    executive?.gastosPorSetor?.map((item, index) => (
-                      <tr key={item.setorNome}>
-                        <td>
-                          <div className={styles.tablePrimaryCell}>
-                            <span className={styles.rankBadge}>{index + 1}</span>
-                            <span>{item.setorNome}</span>
-                          </div>
-                        </td>
-                        <td>{formatCurrency(item.totalRealizado)}</td>
-                        <td>{item.quantidade}</td>
-                      </tr>
-                    ))
+                    executive?.gastosPorSetor?.map((item, index) => {
+                      const orc = isDiretoraFinanceiro
+                        ? (orcamentoData ?? []).find((o) => o.setor === item.setorNome)
+                        : undefined;
+                      const pct = orc?.percentual ?? null;
+                      const pctColor =
+                        pct === null ? '' :
+                        pct > 90 ? styles.orcamentoPercentRed :
+                        pct > 70 ? styles.orcamentoPercentAmber :
+                        styles.orcamentoPercentGreen;
+                      const barColor =
+                        pct === null ? '' :
+                        pct > 90 ? styles.progressFillRed :
+                        pct > 70 ? styles.progressFillAmber :
+                        styles.progressFillGreen;
+
+                      return (
+                        <tr key={item.setorNome}>
+                          <td>
+                            <div className={styles.tablePrimaryCell}>
+                              <span className={styles.rankBadge}>{index + 1}</span>
+                              <span>{item.setorNome}</span>
+                            </div>
+                          </td>
+                          <td>{formatCurrency(item.totalRealizado)}</td>
+                          <td>{item.quantidade}</td>
+                          {isDiretoraFinanceiro && (
+                            <td>
+                              {orc?.limiteMensal ? (
+                                <>
+                                  <span className={pctColor}>{pct!.toFixed(1)}%</span>
+                                  <div className={styles.progressBar}>
+                                    <div
+                                      className={`${styles.progressFill} ${barColor}`}
+                                      style={{ width: `${Math.min(pct!, 100)}%` }}
+                                    />
+                                  </div>
+                                </>
+                              ) : (
+                                <span className={styles.orcamentoNone}>—</span>
+                              )}
+                            </td>
+                          )}
+                        </tr>
+                      );
+                    })
                   )}
                   {!isLoading && (executive?.gastosPorSetor?.length ?? 0) === 0 && (
                     <tr>
-                      <td colSpan={3} className={styles.emptyCell}>Nenhum gasto real no período</td>
+                      <td colSpan={isDiretoraFinanceiro ? 4 : 3} className={styles.emptyCell}>Nenhum gasto real no período</td>
                     </tr>
                   )}
                 </tbody>

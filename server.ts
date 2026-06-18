@@ -21,6 +21,8 @@ import { handle as handleSolicitacoesUpdate } from "./endpoints/solicitacoes/upd
 import { handle as handleSolicitacoesUpdateStatus } from "./endpoints/solicitacoes/update-status_POST";
 import { handle as handleSolicitacoesDelete } from "./endpoints/solicitacoes/delete_POST";
 import { handle as handleHistoricoPrecosBuscar } from "./endpoints/historico-precos/buscar_GET";
+import { handle as handleOrcamentoSetorAtual } from "./endpoints/orcamento-setor/atual_GET";
+import { handle as handleOrcamentoSetorDefinir } from "./endpoints/orcamento-setor/definir_POST";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -472,6 +474,9 @@ app.post("/_api/auth/register_with_password", async (c) => {
 app.get("/_api/solicitacoes/detail", async (c) => runEndpoint(c, handleSolicitacoesDetail));
 
 app.get("/_api/historico-precos/buscar", async (c) => runEndpoint(c, handleHistoricoPrecosBuscar));
+
+app.get("/_api/orcamento-setor/atual", async (c) => runEndpoint(c, handleOrcamentoSetorAtual));
+app.post("/_api/orcamento-setor/definir", async (c) => runEndpoint(c, handleOrcamentoSetorDefinir));
 
 if (existsSync("./static")) {
   app.use("/*", serveStatic({ root: "./static" }));

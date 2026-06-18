@@ -445,7 +445,7 @@ export default function Solicitacoes() {
 
           <DialogContent className={styles.dialogContent}>
             <DialogHeader>
-              <DialogTitle>Registrar nova solicitacao</DialogTitle>
+              <DialogTitle>Registrar nova solicitação</DialogTitle>
               <p className={styles.dialogSubtitle}>
                 Preencha os dados essenciais para iniciar o fluxo de compras.
               </p>
@@ -458,7 +458,7 @@ export default function Solicitacoes() {
                 <div className={styles.formScrollArea}>
                   <section className={styles.formSection}>
                     <div className={styles.sectionHeader}>
-                      <h3>Identificacao</h3>
+                      <h3>Identificação</h3>
                     </div>
                     <div className={styles.formGridTwo}>
                       <FormItem name="titulo" className={styles.spanTwo}>
@@ -589,7 +589,7 @@ export default function Solicitacoes() {
                   </section>
                   <section className={styles.formSection}>
                     <div className={styles.sectionHeader}>
-                      <h3>Classificacao</h3>
+                      <h3>Classificação</h3>
                     </div>
                     <div className={styles.formGridThree}>
                       <FormItem name="prioridade">
@@ -641,7 +641,7 @@ export default function Solicitacoes() {
                         <FormMessage />
                       </FormItem>
                       <FormItem name="valorEstimado">
-                        <FormLabel>Valor estimado unitario (R$)</FormLabel>
+                        <FormLabel>Valor estimado unitário (R$)</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -664,22 +664,24 @@ export default function Solicitacoes() {
                         <FormMessage />
                       </FormItem>
                     </div>
-                    <div style={{ marginTop: 12 }}>
-                      <strong>Total estimado:</strong>{" "}
-                      {formatCurrency(
-                        calculateEstimatedTotal({
-                          valorEstimadoUnitario: form.values.valorEstimado,
-                          quantidade: form.values.quantidade,
-                        })
-                      )}
+                    <div className={styles.totalEstimado}>
+                      <span className={styles.totalEstimadoLabel}>Total estimado:</span>
+                      <span className={styles.totalEstimadoValue}>
+                        {formatCurrency(
+                          calculateEstimatedTotal({
+                            valorEstimadoUnitario: form.values.valorEstimado,
+                            quantidade: form.values.quantidade,
+                          })
+                        )}
+                      </span>
                     </div>
                   </section>
                   <section className={styles.formSection}>
                     <div className={styles.sectionHeader}>
-                      <h3>Referencia</h3>
+                      <h3>Referência</h3>
                     </div>
                     <FormItem name="linkProduto">
-                      <FormLabel>Link de referencia</FormLabel>
+                      <FormLabel>Link de referência</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="https://..."
@@ -700,10 +702,10 @@ export default function Solicitacoes() {
                       <h3>Detalhamento</h3>
                     </div>
                     <FormItem name="descricao">
-                      <FormLabel>Descricao completa da necessidade</FormLabel>
+                      <FormLabel>Descrição completa da necessidade</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Contexto, especificacoes e observacoes uteis para a compra..."
+                          placeholder="Contexto, especificações e observações úteis para a compra..."
                           value={form.values.descricao}
                           onChange={(e) =>
                             form.setValues((prev: FormValues) => ({
@@ -721,12 +723,13 @@ export default function Solicitacoes() {
                   <Button
                     type="button"
                     variant="ghost"
+                    className={styles.footerBtnCancel}
                     onClick={() => handleDialogChange(false)}
                   >
                     Cancelar
                   </Button>
-                  <Button type="submit" disabled={isPending}>
-                    {isPending ? "Salvando..." : "Registrar solicitacao"}
+                  <Button type="submit" className={styles.footerBtnSubmit} disabled={isPending}>
+                    {isPending ? "Salvando..." : "Registrar solicitação"}
                   </Button>
                 </div>
               </form>
@@ -752,7 +755,7 @@ export default function Solicitacoes() {
           <DialogHeader>
             <DialogTitle>Compra direta</DialogTitle>
             <p className={styles.dialogSubtitle}>
-              Registre uma compra administrativa ja concluida, sem passar pelo fluxo de aprovacao.
+              Registre uma compra administrativa já concluída, sem passar pelo fluxo de aprovação.
             </p>
           </DialogHeader>
 
@@ -760,7 +763,7 @@ export default function Solicitacoes() {
             <div className={styles.formScrollArea}>
               <section className={styles.formSection}>
                 <div className={styles.sectionHeader}>
-                  <h3>Identificacao</h3>
+                  <h3>Identificação</h3>
                 </div>
 
                 <div className={styles.formGridTwo}>
@@ -892,7 +895,7 @@ export default function Solicitacoes() {
                   </div>
 
                   <div>
-                    <label>Valor estimado unitario (R$)</label>
+                    <label>Valor estimado unitário (R$)</label>
                     <Input
                       required
                       type="number"
@@ -909,7 +912,7 @@ export default function Solicitacoes() {
                   </div>
 
                   <div>
-                    <label>Valor real unitario (R$)</label>
+                    <label>Valor real unitário (R$)</label>
                     <Input
                       required
                       type="number"
@@ -926,9 +929,11 @@ export default function Solicitacoes() {
                   </div>
                 </div>
 
-                <div style={{ marginTop: 12 }}>
-                  <strong>Valor real total:</strong>{" "}
-                  {formatCurrency(valorRealTotalCompraDireta)}
+                <div className={styles.totalEstimado}>
+                  <span className={styles.totalEstimadoLabel}>Valor real total:</span>
+                  <span className={styles.totalEstimadoValue}>
+                    {formatCurrency(valorRealTotalCompraDireta)}
+                  </span>
                 </div>
               </section>
 
@@ -937,7 +942,7 @@ export default function Solicitacoes() {
                   <h3>Compra</h3>
                 </div>
 
-                <div className={styles.formGridThree}>
+                <div className={styles.formGridFour}>
                   <div>
                     <label>Canal de compra</label>
                     <Select
@@ -968,7 +973,7 @@ export default function Solicitacoes() {
                   </div>
 
                   <div>
-                    <label>Metodo de pagamento</label>
+                    <label>Método de pagamento</label>
                     <Select
                       value={compraDiretaForm.metodoPagamento || "_empty"}
                       onValueChange={(value) =>
@@ -1040,7 +1045,7 @@ export default function Solicitacoes() {
                   </div>
 
                   <div className={styles.spanTwo}>
-                    <label>Descricao</label>
+                    <label>Descrição</label>
                     <Textarea
                       required
                       value={compraDiretaForm.descricao}
@@ -1050,7 +1055,7 @@ export default function Solicitacoes() {
                           descricao: e.target.value,
                         }))
                       }
-                      placeholder="Contexto da compra direta, fornecedor, urgencia ou observacoes operacionais..."
+                      placeholder="Contexto da compra direta, fornecedor, urgência ou observações operacionais..."
                     />
                   </div>
                 </div>
@@ -1061,12 +1066,13 @@ export default function Solicitacoes() {
               <Button
                 type="button"
                 variant="ghost"
+                className={styles.footerBtnCancel}
                 onClick={() => handleCompraDiretaChange(false)}
                 disabled={compraDiretaSubmitting}
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={compraDiretaSubmitting}>
+              <Button type="submit" className={styles.footerBtnSubmit} disabled={compraDiretaSubmitting}>
                 {compraDiretaSubmitting ? "Registrando..." : "Registrar compra"}
               </Button>
             </div>

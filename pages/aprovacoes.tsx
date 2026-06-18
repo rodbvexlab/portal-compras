@@ -547,11 +547,12 @@ export default function Aprovacoes() {
           </div>
 
           <DialogFooter>
-            <Button variant="ghost" onClick={resetDialog}>
+            <Button variant="ghost" className={styles.footerBtnCancel} onClick={resetDialog}>
               Cancelar
             </Button>
             <Button
               variant={dialogContent?.confirmVariant}
+              className={dialogContent?.confirmVariant === 'destructive' ? styles.footerBtnDestructive : styles.footerBtnSubmit}
               onClick={handleConfirm}
               disabled={isConfirmDisabled}
             >

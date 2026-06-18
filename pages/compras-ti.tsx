@@ -523,42 +523,68 @@ export default function ComprasTI() {
             </h2>
 
             {aguardandoCompra.length === 0 ? (
-              <div className={styles.emptyState}>
-                <p>Nenhuma solicitação pronta para compra.</p>
-              </div>
+              <p className={styles.sectionEmptyText}>Nenhuma solicitação pronta para compra.</p>
             ) : (
               <div className={`${styles.cardsGrid} ${styles.comprasTiCardsGrid}`}>
-                {visibleAguardandoCompra.map((item) => (
-                  <div key={item.id} className={`${styles.approvalCard} ${styles.compactApprovalCard}`}>
-                    <div className={`${styles.cardHeader} ${styles.compactCardHeader}`}>
-                      <h3 className={styles.cardTitle}>{item.titulo}</h3>
+                {visibleAguardandoCompra.map((item) => {
+                  const valorEstimadoTotal = calculateEstimatedTotal({
+                    valorEstimadoUnitario: item.valorEstimado,
+                    quantidade: item.quantidade,
+                  });
+                  return (
+                    <div key={item.id} className={styles.slimCard}>
+                      <div className={styles.slimCardHeader}>
+                        <h3 className={styles.slimCardTitle}>{item.titulo}</h3>
+                        <div className={styles.slimCardBadges}>
+                          <Badge variant={getStatusBadgeVariant(item.status)}>
+                            {formatStatus(item.status)}
+                          </Badge>
+                          <Badge variant={getPrioridadeBadgeVariant(item.prioridade)}>
+                            {formatPrioridade(item.prioridade)}
+                          </Badge>
+                        </div>
+                      </div>
 
-                      <div className={styles.compactHeaderBadges}>
-                        <Badge variant={getStatusBadgeVariant(item.status)}>
-                          {formatStatus(item.status)}
-                        </Badge>
-                        <Badge variant={getPrioridadeBadgeVariant(item.prioridade)}>
-                          {formatPrioridade(item.prioridade)}
-                        </Badge>
+                      <p className={styles.slimCardMeta}>
+                        {item.solicitanteNome} · {item.setorNome || "—"} · {formatEmpresa(item.empresa)}
+                      </p>
+
+                      <div className={styles.slimCardFinancial}>
+                        <span className={styles.slimCardTotal}>{formatCurrency(valorEstimadoTotal)} est.</span>
+                        <span className={styles.slimCardSecondary}>
+                          Qtd: {item.quantidade} · {formatDate(item.createdAt)}
+                        </span>
+                      </div>
+
+                      <div className={styles.slimCardActions}>
+                        <div className={styles.slimCardActionsLeft}>
+                          <Button variant="ghost" className={styles.slimCardBtn} asChild>
+                            <Link to={`/solicitacoes/${item.id}`}>Ver solicitação</Link>
+                          </Button>
+                          {item.linkProduto ? (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              className={styles.slimCardBtn}
+                              onClick={() => openProductLink(item.linkProduto)}
+                            >
+                              <ExternalLink size={12} /> Referência
+                            </Button>
+                          ) : null}
+                        </div>
+                        <Button
+                          type="button"
+                          className={styles.slimCardBtnPrimary}
+                          onClick={() => handleIniciarCompra(item)}
+                          disabled={isUpdatingStatus}
+                        >
+                          <PlayCircle size={12} />
+                          {isUpdatingStatus ? "..." : "Assumir compra"}
+                        </Button>
                       </div>
                     </div>
-
-                    {renderCommonInfo(item)}
-
-                    <div className={`${styles.cardFooter} ${styles.compactCardFooter}`}>
-                      {renderBaseActions(item)}
-
-                      <Button
-                        type="button"
-                        onClick={() => handleIniciarCompra(item)}
-                        disabled={isUpdatingStatus}
-                      >
-                        <PlayCircle size={16} />
-                        {isUpdatingStatus ? "Processando..." : "Assumir compra"}
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
@@ -583,42 +609,68 @@ export default function ComprasTI() {
             </h2>
 
             {emCompra.length === 0 ? (
-              <div className={styles.emptyState}>
-                <p>Nenhuma solicitação em processo de compra.</p>
-              </div>
+              <p className={styles.sectionEmptyText}>Nenhuma solicitação em processo de compra.</p>
             ) : (
               <div className={`${styles.cardsGrid} ${styles.comprasTiCardsGrid}`}>
-                {visibleEmCompra.map((item) => (
-                  <div key={item.id} className={`${styles.approvalCard} ${styles.compactApprovalCard}`}>
-                    <div className={`${styles.cardHeader} ${styles.compactCardHeader}`}>
-                      <h3 className={styles.cardTitle}>{item.titulo}</h3>
+                {visibleEmCompra.map((item) => {
+                  const valorEstimadoTotal = calculateEstimatedTotal({
+                    valorEstimadoUnitario: item.valorEstimado,
+                    quantidade: item.quantidade,
+                  });
+                  return (
+                    <div key={item.id} className={styles.slimCard}>
+                      <div className={styles.slimCardHeader}>
+                        <h3 className={styles.slimCardTitle}>{item.titulo}</h3>
+                        <div className={styles.slimCardBadges}>
+                          <Badge variant={getStatusBadgeVariant(item.status)}>
+                            {formatStatus(item.status)}
+                          </Badge>
+                          <Badge variant={getPrioridadeBadgeVariant(item.prioridade)}>
+                            {formatPrioridade(item.prioridade)}
+                          </Badge>
+                        </div>
+                      </div>
 
-                      <div className={styles.compactHeaderBadges}>
-                        <Badge variant={getStatusBadgeVariant(item.status)}>
-                          {formatStatus(item.status)}
-                        </Badge>
-                        <Badge variant={getPrioridadeBadgeVariant(item.prioridade)}>
-                          {formatPrioridade(item.prioridade)}
-                        </Badge>
+                      <p className={styles.slimCardMeta}>
+                        {item.solicitanteNome} · {item.setorNome || "—"} · {formatEmpresa(item.empresa)}
+                      </p>
+
+                      <div className={styles.slimCardFinancial}>
+                        <span className={styles.slimCardTotal}>{formatCurrency(valorEstimadoTotal)} est.</span>
+                        <span className={styles.slimCardSecondary}>
+                          Qtd: {item.quantidade} · {formatDate(item.createdAt)}
+                        </span>
+                      </div>
+
+                      <div className={styles.slimCardActions}>
+                        <div className={styles.slimCardActionsLeft}>
+                          <Button variant="ghost" className={styles.slimCardBtn} asChild>
+                            <Link to={`/solicitacoes/${item.id}`}>Ver solicitação</Link>
+                          </Button>
+                          {item.linkProduto ? (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              className={styles.slimCardBtn}
+                              onClick={() => openProductLink(item.linkProduto)}
+                            >
+                              <ExternalLink size={12} /> Referência
+                            </Button>
+                          ) : null}
+                        </div>
+                        <Button
+                          type="button"
+                          className={styles.slimCardBtnPrimary}
+                          onClick={() => handleOpenCompraDialog(item)}
+                          disabled={isUpdatingStatus}
+                        >
+                          <CheckCircle2 size={12} />
+                          Registrar compra
+                        </Button>
                       </div>
                     </div>
-
-                    {renderCommonInfo(item)}
-
-                    <div className={`${styles.cardFooter} ${styles.compactCardFooter}`}>
-                      {renderBaseActions(item)}
-
-                      <Button
-                        type="button"
-                        onClick={() => handleOpenCompraDialog(item)}
-                        disabled={isUpdatingStatus}
-                      >
-                        <CheckCircle2 size={16} />
-                        Registrar compra
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
@@ -713,42 +765,73 @@ export default function ComprasTI() {
             </h2>
 
             {concluidas.length === 0 ? (
-              <div className={styles.emptyState}>
-                <p>Nenhuma compra finalizada ainda.</p>
-              </div>
+              <p className={styles.concluidaEmptyText}>Nenhuma compra finalizada ainda.</p>
             ) : (
               <div className={`${styles.cardsGrid} ${styles.comprasTiCardsGrid}`}>
-                {visibleConcluidas.map((item) => (
-                  <div key={item.id} className={`${styles.approvalCard} ${styles.compactApprovalCard}`}>
-                    <div className={`${styles.cardHeader} ${styles.compactCardHeader}`}>
-                      <h3 className={styles.cardTitle}>{item.titulo}</h3>
+                {visibleConcluidas.map((item) => {
+                  const valorRealTotal = calculateRealTotal({
+                    valorRealCompraUnitario: item.valorRealCompraUnitario,
+                    valorRealCompraLegado: item.valorRealCompra,
+                    quantidade: item.quantidade,
+                  });
+                  const valorEstimadoTotal = calculateEstimatedTotal({
+                    valorEstimadoUnitario: item.valorEstimado,
+                    quantidade: item.quantidade,
+                  });
 
-                      <div className={styles.compactHeaderBadges}>
-                        <Badge variant={getStatusBadgeVariant(item.status)}>
-                          {formatStatus(item.status)}
-                        </Badge>
-                        <Badge variant={getPrioridadeBadgeVariant(item.prioridade)}>
-                          {formatPrioridade(item.prioridade)}
-                        </Badge>
+                  return (
+                    <div key={item.id} className={styles.concluidaCard}>
+                      <div className={styles.concluidaHeader}>
+                        <h3 className={styles.concluidaTitle}>{item.titulo}</h3>
+                        <div className={styles.concluidaBadges}>
+                          <Badge variant={getStatusBadgeVariant(item.status)}>
+                            {formatStatus(item.status)}
+                          </Badge>
+                          <Badge variant={getPrioridadeBadgeVariant(item.prioridade)}>
+                            {formatPrioridade(item.prioridade)}
+                          </Badge>
+                        </div>
+                      </div>
+
+                      <p className={styles.concluidaMeta}>
+                        {item.solicitanteNome} · {item.setorNome || "—"} · {formatEmpresa(item.empresa)}
+                      </p>
+
+                      <div className={styles.concluidaFinancial}>
+                        <span className={styles.concluidaTotal}>{formatCurrency(valorRealTotal)}</span>
+                        <span className={styles.concluidaSecondary}>
+                          {item.quantidade}× · {formatCanalCompra(item.canalCompra)} · Est. {formatCurrency(valorEstimadoTotal)}
+                        </span>
+                      </div>
+
+                      <div className={styles.concluidaActions}>
+                        <Button variant="ghost" className={styles.concluidaActionBtn} asChild>
+                          <Link to={`/solicitacoes/${item.id}`}>Ver solicitação</Link>
+                        </Button>
+                        {item.linkProduto ? (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            className={styles.concluidaActionBtn}
+                            onClick={() => openProductLink(item.linkProduto)}
+                          >
+                            <ExternalLink size={13} /> Referência
+                          </Button>
+                        ) : null}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className={styles.concluidaActionBtn}
+                          onClick={() => handleOpenAjusteDialog(item)}
+                          disabled={isUpdatingStatus}
+                        >
+                          <RotateCcw size={13} />
+                          Ajuste
+                        </Button>
                       </div>
                     </div>
-
-                    {renderCommonInfo(item)}
-
-                    <div className={`${styles.cardFooter} ${styles.compactCardFooter}`}>
-                      {renderBaseActions(item)}
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => handleOpenAjusteDialog(item)}
-                        disabled={isUpdatingStatus}
-                      >
-                        <RotateCcw size={16} />
-                        Ajuste operacional
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 

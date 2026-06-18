@@ -1,0 +1,224 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+}
+
+.title {
+  font-family: var(--font-family-heading);
+  font-size: clamp(1.5rem, 2vw, 1.9rem);
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.subtitle {
+  color: var(--muted-foreground);
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
+}
+
+.controlLabel {
+  font-size: 13px;
+  color: #8b9299;
+  font-weight: 500;
+}
+
+.controlSelect {
+  background: #1a1f26;
+  border: 1px solid #2a3040;
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 13px;
+  padding: 6px 10px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b9299' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 28px;
+  transition: border-color 0.15s ease;
+}
+
+.controlSelect:focus {
+  outline: none;
+  border-color: rgba(200, 162, 86, 0.6);
+}
+
+.tableShell {
+  background: #1a1f26;
+  border: 1px solid #2a3040;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: 12px 18px;
+  border-bottom: 1px solid #2a3040;
+  font-size: 0.875rem;
+}
+
+.table th {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8b9299;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.setorCell {
+  font-weight: 600;
+  color: #f0f0f0;
+}
+
+.limiteCell {
+  font-variant-numeric: tabular-nums;
+  color: #e2e8f0;
+}
+
+.gastoCell {
+  font-variant-numeric: tabular-nums;
+  color: #e2e8f0;
+}
+
+.percentCell {
+  min-width: 110px;
+}
+
+.percentValue {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.percentGreen { color: #4ade80; }
+.percentAmber { color: #fbbf24; }
+.percentRed   { color: #f87171; }
+.percentNone  { color: #4a5568; font-style: italic; }
+
+.progressBar {
+  height: 4px;
+  border-radius: 2px;
+  background: #2a3040;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.progressFillGreen { background: #4ade80; }
+.progressFillAmber { background: #fbbf24; }
+.progressFillRed   { background: #f87171; }
+
+.actionsCell {
+  white-space: nowrap;
+}
+
+.inlineEdit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inlineInput {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(200, 162, 86, 0.4);
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 13px;
+  padding: 4px 10px;
+  width: 120px;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s ease;
+}
+
+.inlineInput:focus {
+  outline: none;
+  border-color: rgba(200, 162, 86, 0.7);
+  box-shadow: 0 0 0 2px rgba(200, 162, 86, 0.1);
+}
+
+.saveBtn {
+  padding: 4px 12px !important;
+  font-size: 12px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  line-height: 1.5 !important;
+  background: linear-gradient(135deg, #c8a256 0%, #d4ac60 100%) !important;
+  border: none !important;
+  color: #0f1117 !important;
+  font-weight: 700 !important;
+  border-radius: 6px !important;
+}
+
+.cancelBtn {
+  padding: 4px 10px !important;
+  font-size: 12px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  line-height: 1.5 !important;
+}
+
+.defineBtn {
+  padding: 4px 10px !important;
+  font-size: 12px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  line-height: 1.5 !important;
+}
+
+.emptyCell {
+  text-align: center;
+  color: #4a5568;
+  font-size: 13px;
+  font-style: italic;
+  padding: var(--spacing-8) !important;
+}
+
+@media (max-width: 640px) {
+  .table th,
+  .table td {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -11,6 +11,7 @@ import {
   ClipboardList,
   ShoppingCart,
   Users,
+  PiggyBank,
 } from 'lucide-react';
 import { useAuth } from '../helpers/useAuth';
 import { AccessGroup, getAccessGroupForRole } from '../helpers/accessGroups';
@@ -42,6 +43,7 @@ const NAV_ITEMS_BY_GROUP: Record<AccessGroup, NavItem[]> = {
     { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/solicitacoes', icon: FileText, label: 'Solicitações' },
     { to: '/aprovacoes', icon: CheckSquare, label: 'Aprovar Compras' },
+    { to: '/orcamento-setor', icon: PiggyBank, label: 'Orçamento' },
     { to: '/minhas-solicitacoes', icon: ClipboardList, label: 'Minhas Solicitações' },
   ],
   tecnologia: [
@@ -95,6 +97,9 @@ export const AppSidebarLayout: React.FC<{ children: React.ReactNode }> = ({ chil
       : []),
     ...(user && ['admin', 'diretora_financeiro'].includes(user.role)
       ? [{ to: '/aprovacoes', icon: CheckSquare, label: 'Aprovações Financeiras' }]
+      : []),
+    ...(user && ['admin', 'diretora_financeiro'].includes(user.role)
+      ? [{ to: '/orcamento-setor', icon: PiggyBank, label: 'Orçamento' }]
       : []),
     ...(user && ['admin', 'ti'].includes(user.role)
       ? [{ to: '/compras-ti', icon: ShoppingCart, label: 'Compras TI' }]
