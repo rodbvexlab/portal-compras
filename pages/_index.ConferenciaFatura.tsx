@@ -1,15 +1,14 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { formatCurrency, formatStatus, getStatusBadgeVariant, formatCanalCompra, formatEmpresa } from '../helpers/formatters';
+import { formatCurrency, formatStatus, getStatusBadgeVariant, formatCanalCompra } from '../helpers/formatters';
 import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/Select';
 import { Skeleton } from '../components/Skeleton';
-import { CANAL_COMPRA_OPTIONS } from '../helpers/solicitacoesDomain';
+import { CANAL_COMPRA_OPTIONS, EMPRESA_OPTIONS } from '../helpers/solicitacoesDomain';
 import { toast } from 'sonner';
 import type { ConferenciaOutput } from '../endpoints/conferencia-fatura/conferencia_GET.schema';
-import type { CartaoOption } from '../endpoints/conferencia-fatura/cartoes_GET.schema';
 import styles from './_index.ConferenciaFatura.module.css';
 
 const MESES = [
@@ -40,48 +39,49 @@ function getLastDayOfMonth(year: number, month: number): number {
   return new Date(year, month, 0).getDate();
 }
 
+const CARTAO_FINAL_MAP: Record<string, string> = {
+  cartao_acseg: '**** 2985',
+  cartao_acontrans: '**** 1611',
+  cartao_sp: '**** 1611',
+};
+
+function formatCartaoFinal(metodoPagamento: string | null): string {
+  if (!metodoPagamento) return '—';
+  return CARTAO_FINAL_MAP[metodoPagamento] ?? '—';
+}
+
 export default function ConferenciaFatura() {
   const navigate = useNavigate();
   const now = new Date();
-  const [cartao, setCartao] = useState('');
+  const [empresa, setEmpresa] = useState('_all');
   const [mes, setMes] = useState(String(now.getMonth() + 1).padStart(2, '0'));
   const [ano, setAno] = useState(String(now.getFullYear()));
   const [canal, setCanal] = useState('_all');
   const [shouldFetch, setShouldFetch] = useState(false);
   const yearOptions = useMemo(() => getYearOptions(), []);
 
-  const { data: cartoes } = useQuery<CartaoOption[]>({
-    queryKey: ['metodos-pagamento-cartoes'],
-    queryFn: async () => {
-      const res = await fetch('/_api/metodos-pagamento/cartoes');
-      if (!res.ok) return [];
-      return res.json();
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-
   const queryParams = useMemo(() => {
-    if (!shouldFetch || !cartao) return null;
+    if (!shouldFetch) return null;
     const yearNum = Number(ano);
     const monthNum = Number(mes);
     const lastDay = getLastDayOfMonth(yearNum, monthNum);
     return {
-      metodoPagamento: cartao,
+      empresa: empresa !== '_all' ? empresa : undefined,
       dataInicio: `${ano}-${mes}-01`,
       dataFim: `${ano}-${mes}-${String(lastDay).padStart(2, '0')}`,
       canal: canal !== '_all' ? canal : undefined,
     };
-  }, [shouldFetch, cartao, mes, ano, canal]);
+  }, [shouldFetch, empresa, mes, ano, canal]);
 
   const { data, isLoading, isError } = useQuery<ConferenciaOutput>({
     queryKey: ['conferencia-fatura', queryParams],
     queryFn: async () => {
       if (!queryParams) throw new Error('No params');
       const params = new URLSearchParams({
-        metodoPagamento: queryParams.metodoPagamento,
         dataInicio: queryParams.dataInicio,
         dataFim: queryParams.dataFim,
       });
+      if (queryParams.empresa) params.set('empresa', queryParams.empresa);
       if (queryParams.canal) params.set('canal', queryParams.canal);
 
       const res = await fetch(`/_api/conferencia-fatura?${params.toString()}`);
@@ -96,12 +96,8 @@ export default function ConferenciaFatura() {
   });
 
   const handleConferir = useCallback(() => {
-    if (!cartao) {
-      toast.error('Selecione um cartao para conferir.');
-      return;
-    }
     setShouldFetch(true);
-  }, [cartao]);
+  }, []);
 
   const handleFilterChange = useCallback(() => {
     setShouldFetch(false);
@@ -113,18 +109,19 @@ export default function ConferenciaFatura() {
     <div className={styles.container}>
       <div className={styles.filterBar}>
         <div className={styles.filterField}>
-          <label>Cartao</label>
+          <label>Empresa</label>
           <Select
-            value={cartao}
-            onValueChange={(v) => { setCartao(v); handleFilterChange(); }}
+            value={empresa}
+            onValueChange={(v) => { setEmpresa(v); handleFilterChange(); }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecione o cartao..." />
+              <SelectValue placeholder="Todas as empresas" />
             </SelectTrigger>
             <SelectContent>
-              {(cartoes ?? []).map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.nome.replace('Final', '****').replace('- ', '  ')}
+              <SelectItem value="_all">Todas as empresas</SelectItem>
+              {EMPRESA_OPTIONS.map((e) => (
+                <SelectItem key={e.value} value={e.value}>
+                  {e.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -175,7 +172,7 @@ export default function ConferenciaFatura() {
         </div>
 
         <div className={styles.filterAction}>
-          <Button type="button" onClick={handleConferir} disabled={isLoading || !cartao}>
+          <Button type="button" onClick={handleConferir} disabled={isLoading}>
             {isLoading ? 'Conferindo...' : 'Conferir'}
           </Button>
         </div>
@@ -228,8 +225,8 @@ export default function ConferenciaFatura() {
                 <tr>
                   <th>Data</th>
                   <th>Item</th>
-                  <th>Empresa</th>
                   <th>Canal</th>
+                  <th>Cartao</th>
                   <th>Valor real</th>
                   <th>Status</th>
                 </tr>
@@ -251,8 +248,8 @@ export default function ConferenciaFatura() {
                           : '-'}
                       </td>
                       <td className={styles.itemCell}>{item.item}</td>
-                      <td>{formatEmpresa(item.empresa)}</td>
                       <td>{formatCanalCompra(item.canal)}</td>
+                      <td className={styles.cartaoCell}>{formatCartaoFinal(item.metodoPagamento)}</td>
                       <td className={styles.valorCell}>
                         <span className={hasRealValue ? styles.valorReal : styles.valorEstimado}>
                           {formatCurrency(displayValue)}

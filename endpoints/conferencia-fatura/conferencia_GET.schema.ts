@@ -1,11 +1,8 @@
 import { z } from "zod";
+import { EmpresaArrayValues } from "../../helpers/schema";
 
 export const schema = z.object({
-  metodoPagamento: z.enum([
-    "cartao_acseg",
-    "cartao_acontrans",
-    "cartao_sp",
-  ]),
+  empresa: z.enum(EmpresaArrayValues).optional(),
   dataInicio: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   dataFim: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   canal: z.string().trim().min(1).optional(),
@@ -22,6 +19,7 @@ export type ConferenciaItem = {
   setor: string;
   empresa: string;
   canal: string | null;
+  metodoPagamento: string | null;
   valorEstimado: number;
   valorReal: number | null;
   parcelas: number | null;
@@ -41,10 +39,6 @@ export type ConferenciaTotaisPorStatus = {
 };
 
 export type ConferenciaOutput = {
-  cartao: {
-    apelido: string;
-    final: string;
-  };
   periodo: {
     inicio: string;
     fim: string;

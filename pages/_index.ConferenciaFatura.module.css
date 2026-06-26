@@ -199,6 +199,13 @@
   color: color-mix(in srgb, var(--foreground) 92%, white 8%);
 }
 
+.cartaoCell {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
 .valorCell {
   display: flex;
   align-items: center;

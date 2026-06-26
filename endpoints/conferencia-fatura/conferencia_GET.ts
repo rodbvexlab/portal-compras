@@ -2,14 +2,7 @@ import { schema, type ConferenciaOutput, type ConferenciaItem } from "./conferen
 import { db } from "../../helpers/db";
 import { getServerUserSession } from "../../helpers/getServerUserSession";
 import { estimatedTotalSql, realTotalHybridSql } from "../../helpers/monetarySql";
-import { formatMetodoPagamentoLabel, formatCanalCompraLabel } from "../../helpers/solicitacoesDomain";
-import { sql } from "kysely";
-
-const CARTAO_INFO: Record<string, { apelido: string; final: string }> = {
-  cartao_acseg: { apelido: "Cartao ACSEG", final: "2985" },
-  cartao_acontrans: { apelido: "Cartao Acontrans", final: "1611" },
-  cartao_sp: { apelido: "Cartao SP", final: "1611" },
-};
+import { formatCanalCompraLabel } from "../../helpers/solicitacoesDomain";
 
 const ALLOWED_ROLES = ["financeiro", "diretora_financeiro", "admin"] as const;
 
@@ -26,7 +19,7 @@ export async function handle(request: Request) {
 
     const url = new URL(request.url);
     const parsed = schema.safeParse({
-      metodoPagamento: url.searchParams.get("metodoPagamento") ?? undefined,
+      empresa: url.searchParams.get("empresa") || undefined,
       dataInicio: url.searchParams.get("dataInicio") ?? undefined,
       dataFim: url.searchParams.get("dataFim") ?? undefined,
       canal: url.searchParams.get("canal") || undefined,
@@ -35,12 +28,12 @@ export async function handle(request: Request) {
 
     if (!parsed.success) {
       return Response.json(
-        { error: "Parametros invalidos. Informe metodoPagamento, dataInicio e dataFim." },
+        { error: "Parametros invalidos. Informe dataInicio e dataFim." },
         { status: 400 }
       );
     }
 
-    const { metodoPagamento, dataInicio, dataFim, canal, status } = parsed.data;
+    const { empresa, dataInicio, dataFim, canal, status } = parsed.data;
 
     const startDate = new Date(`${dataInicio}T00:00:00.000Z`);
     const endDate = new Date(`${dataFim}T23:59:59.999Z`);
@@ -53,6 +46,7 @@ export async function handle(request: Request) {
         "solicitacoes.titulo",
         "solicitacoes.empresa",
         "solicitacoes.canalCompra",
+        "solicitacoes.metodoPagamento",
         "solicitacoes.status",
         "solicitacoes.parcelas",
         "solicitacoes.dataCompra",
@@ -60,9 +54,12 @@ export async function handle(request: Request) {
         estimatedTotalSql("solicitacoes").as("valorEstimadoTotal"),
         realTotalHybridSql("solicitacoes").as("valorRealTotal"),
       ])
-      .where("solicitacoes.metodoPagamento", "=", metodoPagamento)
       .where("solicitacoes.dataCompra", ">=", startDate)
       .where("solicitacoes.dataCompra", "<=", endDate);
+
+    if (empresa) {
+      query = query.where("solicitacoes.empresa", "=", empresa);
+    }
 
     if (canal) {
       query = query.where(
@@ -90,6 +87,7 @@ export async function handle(request: Request) {
         setor: row.setorNome,
         empresa: row.empresa,
         canal: row.canalCompra,
+        metodoPagamento: row.metodoPagamento,
         valorEstimado,
         valorReal: valorReal > 0 ? valorReal : null,
         parcelas: row.parcelas,
@@ -120,10 +118,7 @@ export async function handle(request: Request) {
       porStatus[statusKey].qtd += 1;
     }
 
-    const cartaoInfo = CARTAO_INFO[metodoPagamento] ?? { apelido: metodoPagamento, final: "????" };
-
     const output: ConferenciaOutput = {
-      cartao: cartaoInfo,
       periodo: { inicio: dataInicio, fim: dataFim },
       totais: {
         valorTotal,
