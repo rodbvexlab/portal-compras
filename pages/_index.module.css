@@ -4,6 +4,38 @@
   gap: var(--spacing-9);
 }
 
+/* ── Tab bar ── */
+.tabBar {
+  display: flex;
+  gap: var(--spacing-1);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  padding-bottom: 0;
+  margin-bottom: calc(-1 * var(--spacing-4));
+}
+
+.tab {
+  padding: 0.55rem 1.1rem;
+  font-size: 0.84rem;
+  font-weight: 580;
+  color: var(--muted-foreground);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--animation-duration-fast) ease;
+  margin-bottom: -1px;
+}
+
+.tab:hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--muted) 18%, transparent);
+}
+
+.tabActive {
+  color: #c8a256;
+  border-bottom-color: #c8a256;
+}
+
 .header {
   display: flex;
   flex-direction: column;

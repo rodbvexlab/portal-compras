@@ -1,4 +1,4 @@
-﻿import React, { Suspense, lazy, useMemo, useState, useCallback } from 'react';
+﻿import React, { Suspense, lazy, useMemo, useState, useCallback, type CSSProperties } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip,
@@ -26,6 +26,7 @@ import { toast } from 'sonner';
 import styles from './_index.module.css';
 
 const DashboardStatusChart = lazy(() => import('./_index.StatusChart'));
+const ConferenciaFatura = lazy(() => import('./_index.ConferenciaFatura'));
 
 type OrcamentoItem = {
   setor: string;
@@ -102,7 +103,13 @@ export default function Dashboard() {
   const [metodoPagamentoFilter, setMetodoPagamentoFilter] = useState<MetodoPagamentoFilterValue>('_all');
   const [canalCompraFilter, setCanalCompraFilter] = useState<CanalCompraFilterValue>('_all');
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'conferencia'>('dashboard');
   const { data: setores } = useQuerySetores();
+
+  const canViewConferencia =
+    user?.role === 'admin' ||
+    user?.role === 'financeiro' ||
+    user?.role === 'diretora_financeiro';
 
   const isDiretoraFinanceiro =
     user?.role === 'diretora_financeiro' || user?.role === 'admin';
@@ -282,9 +289,34 @@ export default function Dashboard() {
   return (
     <div className={styles.container}>
       <Helmet>
-        <title>Dashboard - Portal de Compras</title>
+        <title>{activeTab === 'conferencia' ? 'Conferencia de Fatura' : 'Dashboard'} - Portal de Compras</title>
       </Helmet>
 
+      {canViewConferencia && (
+        <div className={styles.tabBar}>
+          <button
+            type="button"
+            className={`${styles.tab} ${activeTab === 'dashboard' ? styles.tabActive : ''}`}
+            onClick={() => setActiveTab('dashboard')}
+          >
+            Dashboard
+          </button>
+          <button
+            type="button"
+            className={`${styles.tab} ${activeTab === 'conferencia' ? styles.tabActive : ''}`}
+            onClick={() => setActiveTab('conferencia')}
+          >
+            Conferencia de fatura
+          </button>
+        </div>
+      )}
+
+      {activeTab === 'conferencia' && canViewConferencia ? (
+        <Suspense fallback={<Skeleton style={{ height: 400, width: '100%', borderRadius: 12 } as CSSProperties} />}>
+          <ConferenciaFatura />
+        </Suspense>
+      ) : (
+      <>
       <div className={styles.header}>
         <h1 className={styles.title}>Bem-vindo, {user?.displayName}</h1>
         <p className={styles.subtitle}>
@@ -833,6 +865,8 @@ export default function Dashboard() {
           </div>
         </div>
       ))}
+      </>
+      )}
     </div>
   );
 }

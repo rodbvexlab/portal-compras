@@ -23,6 +23,8 @@ import { handle as handleSolicitacoesDelete } from "./endpoints/solicitacoes/del
 import { handle as handleHistoricoPrecosBuscar } from "./endpoints/historico-precos/buscar_GET";
 import { handle as handleOrcamentoSetorAtual } from "./endpoints/orcamento-setor/atual_GET";
 import { handle as handleOrcamentoSetorDefinir } from "./endpoints/orcamento-setor/definir_POST";
+import { handle as handleConferenciaFatura } from "./endpoints/conferencia-fatura/conferencia_GET";
+import { handle as handleMetodosPagamentoCartoes } from "./endpoints/conferencia-fatura/cartoes_GET";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -477,6 +479,9 @@ app.get("/_api/historico-precos/buscar", async (c) => runEndpoint(c, handleHisto
 
 app.get("/_api/orcamento-setor/atual", async (c) => runEndpoint(c, handleOrcamentoSetorAtual));
 app.post("/_api/orcamento-setor/definir", async (c) => runEndpoint(c, handleOrcamentoSetorDefinir));
+
+app.get("/_api/conferencia-fatura", async (c) => runEndpoint(c, handleConferenciaFatura));
+app.get("/_api/metodos-pagamento/cartoes", async (c) => runEndpoint(c, handleMetodosPagamentoCartoes));
 
 if (existsSync("./static")) {
   app.use("/*", serveStatic({ root: "./static" }));
