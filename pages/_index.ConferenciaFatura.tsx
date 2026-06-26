@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { formatCurrency, formatStatus, getStatusBadgeVariant, formatCanalCompra } from '../helpers/formatters';
+import { formatCurrency, formatStatus, getStatusBadgeVariant, formatCanalCompra, formatEmpresa } from '../helpers/formatters';
 import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/Select';
@@ -251,7 +251,7 @@ export default function ConferenciaFatura() {
                           : '-'}
                       </td>
                       <td className={styles.itemCell}>{item.item}</td>
-                      <td>{item.empresa}</td>
+                      <td>{formatEmpresa(item.empresa)}</td>
                       <td>{formatCanalCompra(item.canal)}</td>
                       <td className={styles.valorCell}>
                         <span className={hasRealValue ? styles.valorReal : styles.valorEstimado}>
