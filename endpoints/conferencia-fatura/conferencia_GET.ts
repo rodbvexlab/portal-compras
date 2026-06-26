@@ -19,7 +19,7 @@ export async function handle(request: Request) {
 
     const url = new URL(request.url);
     const parsed = schema.safeParse({
-      empresa: url.searchParams.get("empresa") || undefined,
+      metodoPagamento: url.searchParams.get("metodoPagamento") || undefined,
       dataInicio: url.searchParams.get("dataInicio") ?? undefined,
       dataFim: url.searchParams.get("dataFim") ?? undefined,
       canal: url.searchParams.get("canal") || undefined,
@@ -33,7 +33,7 @@ export async function handle(request: Request) {
       );
     }
 
-    const { empresa, dataInicio, dataFim, canal, status } = parsed.data;
+    const { metodoPagamento, dataInicio, dataFim, canal, status } = parsed.data;
 
     const startDate = new Date(`${dataInicio}T00:00:00.000Z`);
     const endDate = new Date(`${dataFim}T23:59:59.999Z`);
@@ -57,8 +57,8 @@ export async function handle(request: Request) {
       .where("solicitacoes.dataCompra", ">=", startDate)
       .where("solicitacoes.dataCompra", "<=", endDate);
 
-    if (empresa) {
-      query = query.where("solicitacoes.empresa", "=", empresa);
+    if (metodoPagamento) {
+      query = query.where("solicitacoes.metodoPagamento", "=", metodoPagamento);
     }
 
     if (canal) {

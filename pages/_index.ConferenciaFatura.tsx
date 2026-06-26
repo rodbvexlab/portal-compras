@@ -6,7 +6,7 @@ import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/Select';
 import { Skeleton } from '../components/Skeleton';
-import { CANAL_COMPRA_OPTIONS, EMPRESA_OPTIONS } from '../helpers/solicitacoesDomain';
+import { CANAL_COMPRA_OPTIONS } from '../helpers/solicitacoesDomain';
 import { toast } from 'sonner';
 import type { ConferenciaOutput } from '../endpoints/conferencia-fatura/conferencia_GET.schema';
 import styles from './_index.ConferenciaFatura.module.css';
@@ -39,6 +39,12 @@ function getLastDayOfMonth(year: number, month: number): number {
   return new Date(year, month, 0).getDate();
 }
 
+const CARTAO_OPTIONS = [
+  { value: 'cartao_acseg', label: 'ACSEG · **** 2985', final: '2985' },
+  { value: 'cartao_acontrans', label: 'Acontrans · **** 1611', final: '1611' },
+  { value: 'cartao_sp', label: 'SP · **** 1611', final: '1611' },
+] as const;
+
 const CARTAO_FINAL_MAP: Record<string, string> = {
   cartao_acseg: '**** 2985',
   cartao_acontrans: '**** 1611',
@@ -53,7 +59,7 @@ function formatCartaoFinal(metodoPagamento: string | null): string {
 export default function ConferenciaFatura() {
   const navigate = useNavigate();
   const now = new Date();
-  const [empresa, setEmpresa] = useState('_all');
+  const [cartao, setCartao] = useState('_all');
   const [mes, setMes] = useState(String(now.getMonth() + 1).padStart(2, '0'));
   const [ano, setAno] = useState(String(now.getFullYear()));
   const [canal, setCanal] = useState('_all');
@@ -66,12 +72,12 @@ export default function ConferenciaFatura() {
     const monthNum = Number(mes);
     const lastDay = getLastDayOfMonth(yearNum, monthNum);
     return {
-      empresa: empresa !== '_all' ? empresa : undefined,
+      metodoPagamento: cartao !== '_all' ? cartao : undefined,
       dataInicio: `${ano}-${mes}-01`,
       dataFim: `${ano}-${mes}-${String(lastDay).padStart(2, '0')}`,
       canal: canal !== '_all' ? canal : undefined,
     };
-  }, [shouldFetch, empresa, mes, ano, canal]);
+  }, [shouldFetch, cartao, mes, ano, canal]);
 
   const { data, isLoading, isError } = useQuery<ConferenciaOutput>({
     queryKey: ['conferencia-fatura', queryParams],
@@ -81,7 +87,7 @@ export default function ConferenciaFatura() {
         dataInicio: queryParams.dataInicio,
         dataFim: queryParams.dataFim,
       });
-      if (queryParams.empresa) params.set('empresa', queryParams.empresa);
+      if (queryParams.metodoPagamento) params.set('metodoPagamento', queryParams.metodoPagamento);
       if (queryParams.canal) params.set('canal', queryParams.canal);
 
       const res = await fetch(`/_api/conferencia-fatura?${params.toString()}`);
@@ -109,19 +115,19 @@ export default function ConferenciaFatura() {
     <div className={styles.container}>
       <div className={styles.filterBar}>
         <div className={styles.filterField}>
-          <label>Empresa</label>
+          <label>Cartao</label>
           <Select
-            value={empresa}
-            onValueChange={(v) => { setEmpresa(v); handleFilterChange(); }}
+            value={cartao}
+            onValueChange={(v) => { setCartao(v); handleFilterChange(); }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Todas as empresas" />
+              <SelectValue placeholder="Todos os cartoes" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="_all">Todas as empresas</SelectItem>
-              {EMPRESA_OPTIONS.map((e) => (
-                <SelectItem key={e.value} value={e.value}>
-                  {e.label}
+              <SelectItem value="_all">Todos os cartoes</SelectItem>
+              {CARTAO_OPTIONS.map((c) => (
+                <SelectItem key={c.value} value={c.value}>
+                  {c.label}
                 </SelectItem>
               ))}
             </SelectContent>

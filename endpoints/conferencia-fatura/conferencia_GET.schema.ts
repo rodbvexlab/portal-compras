@@ -1,8 +1,11 @@
 import { z } from "zod";
-import { EmpresaArrayValues } from "../../helpers/schema";
 
 export const schema = z.object({
-  empresa: z.enum(EmpresaArrayValues).optional(),
+  metodoPagamento: z.enum([
+    "cartao_acseg",
+    "cartao_acontrans",
+    "cartao_sp",
+  ]).optional(),
   dataInicio: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   dataFim: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   canal: z.string().trim().min(1).optional(),
