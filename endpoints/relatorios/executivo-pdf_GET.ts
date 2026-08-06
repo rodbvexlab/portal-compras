@@ -137,6 +137,27 @@ function fixPresentationText(text: string) {
   }
 }
 
+// Characters outside Latin-1 (U+0000\u2013U+00FF) that WinAnsi/Windows-1252 supports
+const WIN1252_EXTRAS = new Set([
+  0x20ac, 0x201a, 0x0192, 0x201e, 0x2026, 0x2020, 0x2021, 0x02c6,
+  0x2030, 0x0160, 0x2039, 0x0152, 0x017d, 0x2018, 0x2019, 0x201c,
+  0x201d, 0x2022, 0x2013, 0x2014, 0x02dc, 0x2122, 0x0161, 0x203a,
+  0x0153, 0x017e, 0x0178,
+]);
+
+function sanitizeForPdf(text: string): string {
+  if (!text) return text;
+  const chars = Array.from(text);
+  let changed = false;
+  const result = chars.map((char) => {
+    const code = char.codePointAt(0) ?? 0;
+    if (code <= 0xff || WIN1252_EXTRAS.has(code)) return char;
+    changed = true;
+    return "?";
+  });
+  return changed ? result.join("") : text;
+}
+
 function formatCurrency(value: number | null | undefined) {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -240,7 +261,7 @@ function applyVisibilityFilters<TQuery>(query: TQuery, filters: SolicitacaoVisib
 }
 
 function wrapText(font: PDFFont, text: string, size: number, maxWidth: number) {
-  const normalized = (text || "-").replace(/\s+/g, " ").trim() || "-";
+  const normalized = (sanitizeForPdf(text) || "-").replace(/\s+/g, " ").trim() || "-";
   const words = normalized.split(" ");
   const lines: string[] = [];
   let current = "";
@@ -656,10 +677,11 @@ export async function handle(request: Request) {
       y: number,
       options?: DrawTextOptions
     ) => {
+      const safeText = sanitizeForPdf(text);
       const size = options?.size ?? 10;
       const font = options?.bold ? fontBold : fontRegular;
       const color = options?.color ?? COLORS.text;
-      const width = font.widthOfTextAtSize(text, size);
+      const width = font.widthOfTextAtSize(safeText, size);
       let finalX = x;
 
       if (options?.align === "right") {
@@ -668,7 +690,7 @@ export async function handle(request: Request) {
         finalX = x + (options.maxWidth - width) / 2;
       }
 
-      page.drawText(text, {
+      page.drawText(safeText, {
         x: finalX,
         y,
         size,
@@ -1470,12 +1492,8 @@ export async function handle(request: Request) {
 
     const pdfBytes = await pdfDoc.save();
     const filename = `relatorio-executivo-v2_1-${executivePeriod.startDate}_a_${executivePeriod.endDate}.pdf`;
-    const pdfArrayBuffer = pdfBytes.buffer.slice(
-      pdfBytes.byteOffset,
-      pdfBytes.byteOffset + pdfBytes.byteLength
-    ) as ArrayBuffer;
 
-    return new Response(pdfArrayBuffer, {
+    return new Response(pdfBytes, {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="${filename}"`,
